@@ -1,0 +1,203 @@
+NAME
+    Geo::StreetAddress::US - Perl extension for parsing US street addresses
+
+SYNOPSIS
+      use Geo::StreetAddress::US;
+
+      my $hashref = Geo::StreetAddress::US->parse_location(
+                    "1005 Gravenstein Hwy N, Sebastopol CA 95472" );
+
+      my $hashref = Geo::StreetAddress::US->parse_location(
+                    "Hollywood & Vine, Los Angeles, CA" );
+
+      my $hashref = Geo::StreetAddress::US->parse_address(
+                    "1600 Pennsylvania Ave, Washington, DC" );
+
+      my $hashref = Geo::StreetAddress::US->parse_intersection(
+                    "Mission Street at Valencia Street, San Francisco, CA" );
+
+      my $normal = Geo::StreetAddress::US->normalize_address( \%spec );
+          # the parse_* methods call this automatically...
+
+DESCRIPTION
+    Geo::StreetAddress::US is a regex-based street address and street
+    intersection parser for the United States. Its basic goal is to be as
+    forgiving as possible when parsing user-provided address strings.
+    Geo::StreetAddress::US knows about directional prefixes and suffixes,
+    fractional building numbers, building units, grid-based addresses (such
+    as those used in parts of Utah), 5 and 9 digit ZIP codes, and all of the
+    official USPS abbreviations for street types and state names.
+
+RETURN VALUES
+    Most Geo::StreetAddress::US methods return a reference to a hash
+    containing address or intersection information as one of their
+    arguments. This "address specifier" hash may contain any of the
+    following fields for a given address. If a given field is not present in
+    the address, the corresponding key will be set to "undef" in the hash.
+
+  ADDRESS SPECIFIER
+    number
+        House or street number.
+
+    prefix
+        Directional prefix for the street, such as N, NE, E, etc. A given
+        prefix should be one to two characters long.
+
+    street
+        Name of the street, without directional or type qualifiers.
+
+    type
+        Abbreviated street type, e.g. Rd, St, Ave, etc. See the USPS
+        official type abbreviations at
+        <http://www.usps.com/ncsc/lookups/abbr_suffix.txt> for a list of
+        abbreviations used.
+
+    suffix
+        Directional suffix for the street, as above.
+
+    city
+        Name of the city, town, or other locale that the address is situated
+        in.
+
+    state
+        The state which the address is situated in, given as its two-letter
+        postal abbreviation. See
+        <http://www.usps.com/ncsc/lookups/abbr_state.txt> for a list of
+        abbreviations used.
+
+    zip Five digit ZIP postal code for the address, including leading zero,
+        if needed.
+
+  INTERSECTION SPECIFIER
+    prefix1, prefix2
+        Directional prefixes for the streets in question.
+
+    street1, street2
+        Names of the streets in question.
+
+    type1, type2
+        Street types for the streets in question.
+
+    suffix1, suffix2
+        Directional suffixes for the streets in question.
+
+    city
+        City or locale containing the intersection, as above.
+
+    state
+        State abbreviation, as above.
+
+    zip Five digit ZIP code, as above.
+
+GLOBAL VARIABLES
+    Geo::StreetAddress::US contains a number of global variables which it
+    uses to recognize different bits of US street addresses. Although you
+    will probably not need them, they are documented here for completeness's
+    sake.
+
+    %Directional
+        Maps directional names (north, northeast, etc.) to abbreviations (N,
+        NE, etc.).
+
+    %Direction_Code
+        Maps directional abbreviations to directional names.
+
+    %Street_Type
+        Maps lowercased USPS standard street types to their canonical postal
+        abbreviations as found in TIGER/Line. See eg/get_street_abbrev.pl in
+        the distrbution for how this map was generated.
+
+    %State_Code
+        Maps lowercased US state and territory names to their canonical
+        two-letter postal abbreviations. See eg/get_state_abbrev.pl in the
+        distrbution for how this map was generated.
+
+    %State_FIPS
+        Maps two-digit FIPS-55 US state and territory codes (including the
+        leading zero!) as found in TIGER/Line to the state's canonical
+        two-letter postal abbreviation. See eg/get_state_fips.pl in the
+        distrbution for how this map was generated. Yes, I know the FIPS
+        data also has the state names. Oops.
+
+    %Addr_Match
+        A hash of compiled regular expressions corresponding to different
+        types of address or address portions. Defined regexen include type,
+        number, fraction, state, direct(ion), dircode, zip, corner, street,
+        place, address, and intersection.
+
+CLASS METHODS
+    Geo::StreetAddress::US->parse_location( $string )
+    Parses any address or intersection string and returns the appropriate
+    specifier, by calling parse_intersection() or parse_address() as needed.
+
+    Geo::StreetAddress::US->parse_address( $address_string )
+    Parses a street address into an address specifier, returning undef if
+    the address cannot be parsed. You probably want to use parse_location()
+    instead.
+
+    Geo::StreetAddress::US->parse_intersection( $intersection_string )
+    Parses an intersection string into an intersection specifier, returning
+    undef if the address cannot be parsed. You probably want to use
+    parse_location() instead.
+
+    Geo::StreetAddress::US->normalize_address( $spec )
+    Takes an address or intersection specifier, and normalizes its
+    components, stripping out all leading and trailing whitespace and
+    punctuation, and substituting official abbreviations for prefix, suffix,
+    type, and state values. Also, city names that are prefixed with a
+    directional abbreviation (e.g. N, NE, etc.) have the abbreviation
+    expanded. The normalized specifier is returned.
+
+    Typically, you won't need to use this method, as the "parse_*()" methods
+    call it for you.
+
+    N.B., "normalize_address()" crops 9-digit ZIP codes to 5 digits. This is
+    for the benefit of Geo::Coder::US and may not be what you want. E-mail
+    me if this is a problem and I'll see what I can do to fix it.
+
+BUGS, CAVEATS, MISCELLANY
+    Geo::StreetAddress::US might not correctly parse house numbers that
+    contain hyphens, such as those used in parts of Queens, New York. Also,
+    some addresses in rural Michigan and Illinois may contain letter
+    prefixes to the building number that may cause problems. Fixing these
+    edge cases is on the to-do list, to be sure. Patches welcome!
+
+    This software was originally part of Geo::Coder::US (q.v.) but was split
+    apart into an independent module for your convenience. Therefore it has
+    some behaviors which were designed for Geo::Coder::US, but which may not
+    be right for your purposes. If this turns out to be the case, please let
+    me know.
+
+    Geo::StreetAddress::US does NOT perform USPS-certified address
+    normalization.
+
+SEE ALSO
+    This software was originally part of Geo::Coder::US(3pm).
+
+    Lingua::EN::AddressParse(3pm) and Geo::PostalAddress(3pm) both do
+    something very similar to Geo::StreetAddress::US, but are either too
+    strict/limited in their address parsing, or not really specific enough
+    in how they break down addresses (for my purposes). If you want
+    USPS-style address standardization, try Scrape::USPS::ZipLookup(3pm). Be
+    aware, however, that it scrapes a form on the USPS website in a way that
+    may not be officially permitted and might break at any time. If this
+    module does not do what you want, you might give the othersa try. All
+    three modules are available from the CPAN.
+
+    You can see Geo::StreetAddress::US in action at <http://geocoder.us/>.
+
+APPRECIATION
+    Many thanks to Dave Rolsky for submitting a very useful patch to fix
+    fractional house numbers, dotted directionals, and other kinds of edge
+    cases, e.g. South St. He even submitted additional tests!
+
+AUTHOR
+    Schuyler D. Erle <schuyler@geocoder.us>
+
+COPYRIGHT AND LICENSE
+    Copyright (C) 2005 by Schuyler D. Erle.
+
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself, either Perl version 5.8.4 or, at
+    your option, any later version of Perl 5 you may have available.
+
