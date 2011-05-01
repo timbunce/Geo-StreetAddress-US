@@ -872,7 +872,7 @@ sub normalize_address {
 
     # attempt to expand directional prefixes on place names
     $part->{city} =~ s/^($Addr_Match{dircode})\s+(?=\S)
-		      /\u$Direction_Code{$1} /iosx
+		      /\u$Direction_Code{uc $1} /iosx
 		      if $part->{city};
 
     # strip ZIP+4

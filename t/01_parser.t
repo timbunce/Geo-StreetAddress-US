@@ -1,5 +1,5 @@
 use blib;
-use Test::More tests => 38;
+use Test::More tests => 39;
 use strict;
 use warnings;
 
@@ -350,6 +350,16 @@ my %address = (
 	      'prefix1' => undef,
 	      'street2' => 'Valencia'
         },
+    "1 First St, e San Jose CA" => { # lower case city direction
+          'number' => '1',
+          'street' => 'First',
+          'state' => 'CA',
+          'city' => 'East San Jose',
+          'zip' => undef,
+          'suffix' => undef,
+          'type' => 'St',
+          'prefix' => undef
+        },
 );
 
 my @failures = (
@@ -363,7 +373,8 @@ my @failures = (
 
 while (my ($addr, $expected) = each %address) {
     my $parse = Geo::StreetAddress::US->parse_location( $addr );
-    is_deeply( $parse, $expected, "can parse $addr" );
+    is_deeply( $parse, $expected, "can parse $addr" )
+        or print Dumper($parse);
 }
 
 for my $fail (@failures) {
