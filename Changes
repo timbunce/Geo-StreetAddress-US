@@ -3,6 +3,7 @@ Revision history for Perl extension Geo::StreetAddress::US.
 1.00  TBD
 
     Fixed lower cased city direction thanks to Al Sary. RT#50476.
+    Fixed space in state name thanks to Nate Blaylock. RT#30109.
 
 0.99  May 17 2005
 

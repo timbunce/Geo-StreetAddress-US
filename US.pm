@@ -684,7 +684,10 @@ our %Addr_Match = (
     type    => join("|", keys %_Street_Type_List),
     number  => qr/\d+-?\d*/,
     fraction => qr{\d+\/\d+},
-    state   => join("|", %State_Code),
+    state   => join("|",
+        # escape spaces in state names (e.g., "new york" --> "new\\ york")
+        # so they still match in the x environment below
+        map { ( quotemeta $_) } keys %State_Code, values %State_Code),
     direct  => join("|",
 		    # map direction names to direction codes
                     keys %Directional,

@@ -1,7 +1,8 @@
 use blib;
-use Test::More tests => 39;
+use Test::More tests => 40;
 use strict;
 use warnings;
+use Data::Dumper;
 
 use_ok( "Geo::StreetAddress::US" );
 
@@ -358,6 +359,16 @@ my %address = (
           'zip' => undef,
           'suffix' => undef,
           'type' => 'St',
+          'prefix' => undef
+        },
+    "123 Maple Rochester, New York" => { # space in state name
+          'number' => '123',
+          'street' => 'Maple',
+          'state' => 'NY',
+          'city' => 'Rochester',
+          'zip' => undef,
+          'suffix' => undef,
+          'type' => '',
           'prefix' => undef
         },
 );
