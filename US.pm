@@ -36,10 +36,12 @@ names.
 =head1 RETURN VALUES
 
 Most Geo::StreetAddress::US methods return a reference to a hash containing
-address or intersection information as one of their arguments. This
+address or intersection information. This
 "address specifier" hash may contain any of the following fields for a
 given address. If a given field is not present in the address, the 
 corresponding key will be set to C<undef> in the hash.
+
+Future versions of this module may add extra fields.
 
 =head2 ADDRESS SPECIFIER
 
