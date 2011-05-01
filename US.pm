@@ -86,13 +86,13 @@ Five digit ZIP postal code for the address, including leading zero, if needed.
 
 =item unit
 
-If the address includes a unit number, such as a room, suite or appartment,
-the C<unit> field will indicate the type of unit.
+If the address includes a Secondary Unit Designator, such as a room, suite or
+appartment, the C<unit> field will indicate the type of unit.
 
 =item unitnum
 
 If the address includes a unit number, such as a room, suite or appartment,
-the C<unitnum> field will indicate the number of the unit.
+the C<unitnum> field will indicate the number of the unit (which may not be numeric).
 
 =back
 
@@ -738,6 +738,9 @@ our %Addr_Match = (
         )
 	/ix;
 
+    # http://www.usps.com/ncsc/lookups/abbreviations.html#secunitdesig
+    # TODO add support for those that don't require a number
+    # TODO map to standard names/abbreviations
     $Addr_Match{unit} = qr/
         (?:
           (su?i?te
@@ -745,7 +748,15 @@ our %Addr_Match = (
             |(?:ap|dep)(?:ar)?t(?:me?nt)?
             |ro*m
             |flo*r?
-            |unit
+            |uni?t
+            |bu?i?ldi?n?g
+            |ha?nga?r
+            |lot
+            |pier
+            |slip
+            |spa?ce?
+            |stop
+            |tra?i?le?r
             |box)				(?{ $_{unit}   = $^N })
           \W+|\#\W*
         )
