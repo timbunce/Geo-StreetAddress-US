@@ -1,5 +1,5 @@
 use blib;
-use Test::More tests => 40;
+use Test::More tests => 42;
 use strict;
 use warnings;
 use Data::Dumper;
@@ -370,6 +370,26 @@ my %address = (
           'suffix' => undef,
           'type' => '',
           'prefix' => undef
+        },
+    "233 S Wacker Dr 60606-6306" => { # zip+4 with hyphen
+          'number' => '233',
+          'street' => 'Wacker',
+          'state' => undef,
+          'zip' => '60606',
+          'city' => undef,
+          'suffix' => undef,
+          'type' => 'Dr',
+          'prefix' => 'S'
+        },
+    "233 S Wacker Dr 606066306" => { # zip+4 without hyphen
+          'number' => '233',
+          'street' => 'Wacker',
+          'state' => undef,
+          'zip' => '60606',
+          'city' => undef,
+          'suffix' => undef,
+          'type' => 'Dr',
+          'prefix' => 'S'
         },
 );
 

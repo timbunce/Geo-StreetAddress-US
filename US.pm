@@ -698,7 +698,7 @@ our %Addr_Match = (
                     sort { length $b <=> length $a }
                     values %Directional),
     dircode => join("|", keys %Direction_Code), 
-    zip	    => qr/\d{5}(?:-\d{4})?/,
+    zip	    => qr/\d{5}(?:-?\d{4})?/,  # XXX add \b?
     corner  => qr/(?:\band\b|\bat\b|&|\@)/i,
     unit    => qr/(?:(?:su?i?te|p\W*[om]\W*b(?:ox)?|dept|apt|ro*m|fl|apt|unit|box)\W+|#\W*)[\w-]+/i,
 );
@@ -878,8 +878,8 @@ sub normalize_address {
 		      /\u$Direction_Code{uc $1} /iosx
 		      if $part->{city};
 
-    # strip ZIP+4
-    $part->{zip} =~ s/-.*$//os if $part->{zip};
+    # strip ZIP+4 (which may be missing a hyphen)
+    $part->{zip} =~ s/^(.{5}).*/$1/os if $part->{zip};
 
     return $part;
 }

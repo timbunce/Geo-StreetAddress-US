@@ -4,6 +4,7 @@ Revision history for Perl extension Geo::StreetAddress::US.
 
     Fixed lower cased city direction thanks to Al Sary. RT#50476.
     Fixed space in state name thanks to Nate Blaylock. RT#30109.
+    Allow ZIP+4 without hyphen thanks to Mark Pickett. RT#17445.
 
 0.99  May 17 2005
 
