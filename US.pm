@@ -84,6 +84,16 @@ for a list of abbreviations used.
 
 Five digit ZIP postal code for the address, including leading zero, if needed.
 
+=item unit
+
+If the address includes a unit number, such as a room, suite or appartment,
+the C<unit> field will indicate the type of unit.
+
+=item unitnum
+
+If the address includes a unit number, such as a room, suite or appartment,
+the C<unitnum> field will indicate the number of the unit.
+
 =back
 
 =head2 INTERSECTION SPECIFIER
@@ -702,7 +712,6 @@ our %Addr_Match = (
     dircode => join("|", keys %Direction_Code), 
     zip	    => qr/\d{5}(?:-?\d{4})?/,  # XXX add \b?
     corner  => qr/(?:\band\b|\bat\b|&|\@)/i,
-    unit    => qr/(?:(?:su?i?te|p\W*[om]\W*b(?:ox)?|dept|apt|ro*m|fl|apt|unit|box)\W+|#\W*)[\w-]+/i,
 );
 
 {
@@ -728,6 +737,20 @@ our %Addr_Match = (
           )
         )
 	/ix;
+
+    $Addr_Match{unit} = qr/
+        (?:
+          (su?i?te
+            |p\W*[om]\W*b(?:ox)?
+            |(?:ap|dep)(?:ar)?t(?:me?nt)?
+            |ro*m
+            |flo*r?
+            |unit
+            |box)				(?{ $_{unit}   = $^N })
+          \W+|\#\W*
+        )
+        (  [\w-]+)				(?{ $_{unitnum}= $^N })
+        /ix;
 
     $Addr_Match{place} = qr/
 	(?:
