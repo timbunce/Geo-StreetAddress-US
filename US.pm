@@ -741,8 +741,8 @@ our %Addr_Match = (
     # http://www.usps.com/ncsc/lookups/abbreviations.html#secunitdesig
     # TODO add support for those that don't require a number
     # TODO map to standard names/abbreviations
-    $Addr_Match{unit} = qr/
-        (?:
+
+    $Addr_Match{sec_unit_type} = qr/
           (su?i?te
             |p\W*[om]\W*b(?:ox)?
             |(?:ap|dep)(?:ar)?t(?:me?nt)?
@@ -758,8 +758,10 @@ our %Addr_Match = (
             |stop
             |tra?i?le?r
             |box)				(?{ $_{unit}   = $^N })
-          \W+|\#\W*
-        )
+        /ix;
+
+    $Addr_Match{unit} = qr/
+        (?: $Addr_Match{sec_unit_type} \W+|\#\W*)
         (  [\w-]+)				(?{ $_{unitnum}= $^N })
         /ix;
 
