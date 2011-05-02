@@ -8,6 +8,7 @@ Revision history for Perl extension Geo::StreetAddress::US.
     Added 'unit' (type) and 'unitnum' fields thanks to Evan S Kaufman. RT#44735.
     Added support for more Secondary Unit Designators to unit field.
     Added note to docs that future versions may add extra fields.
+    Increased minimum perl version to 5.8.1.
 
 0.99  May 17 2005
 
