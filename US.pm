@@ -756,7 +756,7 @@ our %Addr_Match = (
             |spa?ce?
             |stop
             |tra?i?le?r
-            |box)				(?{ $_{sec_unit_type}   = $^N })
+            |box)\b				(?{ $_{sec_unit_type}   = $^N })
         /ix;
 
     $Addr_Match{sec_unit_type_unnumbered} = qr/
@@ -769,14 +769,18 @@ our %Addr_Match = (
             |rear
             |side
             |uppe?r
-            )			        	(?{ $_{sec_unit_type}   = $^N })
+            )\b			        	(?{ $_{sec_unit_type}   = $^N })
         /ix;
 
     $Addr_Match{sec_unit} = qr/
-        (?: (?:$Addr_Match{sec_unit_type_numbered} \W+)
-            | \#\W*                             (?{ $_{sec_unit_type}   = 'unit' })
+        (:?
+            (?: (?:$Addr_Match{sec_unit_type_numbered} \W+)
+                | (\#)\W*                       (?{ $_{sec_unit_type}   = $^N })
+            )
+            (  [\w-]+)				(?{ $_{sec_unit_num}    = $^N })
         )
-        (  [\w-]+)				(?{ $_{sec_unit_num}= $^N })
+        |
+            $Addr_Match{sec_unit_type_unnumbered}
         /ix;
 
     $Addr_Match{place} = qr/

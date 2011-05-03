@@ -1,5 +1,5 @@
 use blib;
-use Test::More tests => 42;
+use Test::More tests => 43;
 use strict;
 use warnings;
 use Data::Dumper;
@@ -394,6 +394,17 @@ my %address = (
           'suffix' => undef,
           'type' => 'Dr',
           'prefix' => 'S'
+        },
+    "233 S Wacker Dr lobby 60606" => { # unnumbered secondary unit type
+          'number' => '233',
+          'street' => 'Wacker',
+          'state' => undef,
+          'zip' => '60606',
+          'city' => undef,
+          'suffix' => undef,
+          'type' => 'Dr',
+          'prefix' => 'S',
+          'sec_unit_type' => 'lobby',
         },
 );
 
