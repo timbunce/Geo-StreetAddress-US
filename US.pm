@@ -801,6 +801,18 @@ our %Addr_Match = (
 	   $Addr_Match{place}
 	\W*$/ix;
 
+    # XXX experimental
+    # unit can come first, street number is optional, city and state aren't needed
+    $Addr_Match{informal_address} = qr/
+        ^\s*
+        (?:$Addr_Match{unit}\W+)?
+        (  $Addr_Match{number})?\W*             (?{ $_{number} = $^N })
+        (?:$Addr_Match{fraction}\W*)?
+           $Addr_Match{street}\W+
+        (?:$Addr_Match{unit}\W+)?
+        (?:$Addr_Match{place})?
+        /ix;
+
     $Addr_Match{intersection} = qr/^\W*
 	   $Addr_Match{street}\W*?	
 
@@ -846,25 +858,29 @@ our $Old_Undef_Fields_Behaviour = 1;
 =item Geo::StreetAddress::US->parse_location( $string )
 
 Parses any address or intersection string and returns the appropriate
-specifier, by calling parse_intersection() or parse_address() as needed.
+specifier. If $string matches L</corner> then parse_intersection() is used.
+Else parse_address() is called and if that returns false then
+parse_informal_address() is called.
 
 =cut
 
 sub parse_location {
     my ($class, $addr) = @_;
+
     if ($addr =~ /$Addr_Match{corner}/ios) {
-	$class->parse_intersection($addr);
-    } else {
-	$class->parse_address($addr);
+	return $class->parse_intersection($addr);
     }
+    return $class->parse_address($addr)
+        || $class->parse_informal_address($addr);
 }
 
 
 =item Geo::StreetAddress::US->parse_address( $address_string )
 
-Parses a street address into an address specifier, returning undef if
-the address cannot be parsed. You probably want to use parse_location()
-instead.
+Parses a street address into an address specifier using the L</address>
+pattern, returning undef if the address cannot be parsed.
+
+You may want to use parse_location() instead.
 
 =cut
 
@@ -874,6 +890,29 @@ sub parse_address {
 
     $addr =~ /$Addr_Match{address}/ios
         or return undef;
+
+    return $class->normalize_address({ %_ });
+}
+
+
+=item Geo::StreetAddress::US->parse_informal_address( $address_string )
+
+Acts like parse_address() except that it handles a wider range of address
+formats because it uses the L</informal_address> pattern. That means a
+unit can come first, a street number is optional, and the city and state aren't
+needed. Which means that informal addresses like "#42 123 Main St" can be parsed.
+
+You may want to use parse_location() instead.
+
+=cut
+
+sub parse_informal_address {
+    my ($class, $addr) = @_;
+    local %_;
+
+    $addr =~ /$Addr_Match{informal_address}/ios
+        or return undef;
+
     return $class->normalize_address({ %_ });
 }
 

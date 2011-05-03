@@ -420,7 +420,7 @@ my @failures = (
 while (my ($addr, $expected) = each %address) {
     my $parse = Geo::StreetAddress::US->parse_location( $addr );
     is_deeply( $parse, $expected, "can parse $addr" )
-        or print Dumper($parse);
+        or warn "Got: ".Dumper($parse);
 }
 
 for my $fail (@failures) {
