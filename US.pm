@@ -84,15 +84,15 @@ for a list of abbreviations used.
 
 Five digit ZIP postal code for the address, including leading zero, if needed.
 
-=item unit
+=item sec_unit_type
 
 If the address includes a Secondary Unit Designator, such as a room, suite or
-appartment, the C<unit> field will indicate the type of unit.
+appartment, the C<sec_unit_type> field will indicate the type of unit.
 
-=item unitnum
+=item sec_unit_num
 
 If the address includes a Secondary Unit Designator, such as a room, suite or appartment,
-the C<unitnum> field will indicate the number of the unit (which may not be numeric).
+the C<sec_unit_num> field will indicate the number of the unit (which may not be numeric).
 
 =back
 
@@ -741,7 +741,7 @@ our %Addr_Match = (
     # http://www.usps.com/ncsc/lookups/abbreviations.html#secunitdesig
     # TODO add support for those that don't require a number
     # TODO map to standard names/abbreviations
-    $Addr_Match{sec_unit_type} = qr/
+    $Addr_Match{sec_unit_type_numbered} = qr/
           (su?i?te
             |p\W*[om]\W*b(?:ox)?
             |(?:ap|dep)(?:ar)?t(?:me?nt)?
@@ -756,14 +756,27 @@ our %Addr_Match = (
             |spa?ce?
             |stop
             |tra?i?le?r
-            |box)				(?{ $_{unit}   = $^N })
+            |box)				(?{ $_{sec_unit_type}   = $^N })
         /ix;
 
-    $Addr_Match{unit} = qr/
-        (?: (?:$Addr_Match{sec_unit_type} \W+)
-            | \#\W*                             (?{ $_{unit}   = 'unit' })
+    $Addr_Match{sec_unit_type_unnumbered} = qr/
+          (ba?se?me?n?t
+            |fro?nt
+            |lo?bby
+            |lowe?r
+            |off?i?ce?
+            |pe?n?t?ho?u?s?e?
+            |rear
+            |side
+            |uppe?r
+            )			        	(?{ $_{sec_unit_type}   = $^N })
+        /ix;
+
+    $Addr_Match{sec_unit} = qr/
+        (?: (?:$Addr_Match{sec_unit_type_numbered} \W+)
+            | \#\W*                             (?{ $_{sec_unit_type}   = 'unit' })
         )
-        (  [\w-]+)				(?{ $_{unitnum}= $^N })
+        (  [\w-]+)				(?{ $_{sec_unit_num}= $^N })
         /ix;
 
     $Addr_Match{place} = qr/
@@ -778,7 +791,7 @@ our %Addr_Match = (
 	(  $Addr_Match{number})\W*		(?{ $_{number} = $^N })
         (?:$Addr_Match{fraction}\W*)?
 	   $Addr_Match{street}\W+
-	(?:$Addr_Match{unit}\W+)?
+	(?:$Addr_Match{sec_unit}\W+)?
 	   $Addr_Match{place}
 	\W*$/ix;
 

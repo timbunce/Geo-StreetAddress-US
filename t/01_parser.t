@@ -66,8 +66,8 @@ my %address = (
 	      'suffix' => undef,
 	      'type' => 'Hwy',
 	      'prefix' => 'N',
-              'unit' => 'Suite',
-              'unitnum' => '500',
+              'sec_unit_type' => 'Suite',
+              'sec_unit_num' => '500',
 	    },
     "1005 N Gravenstein Hwy Suite 500 Sebastopol, CA" => {
 	      'number' => '1005',
@@ -78,8 +78,8 @@ my %address = (
 	      'suffix' => undef,
 	      'type' => 'Hwy',
 	      'prefix' => 'N',
-              'unit' => 'Suite',
-              'unitnum' => '500',
+              'sec_unit_type' => 'Suite',
+              'sec_unit_num' => '500',
 	    },
     "1005 N Gravenstein Highway, Sebastopol, CA, 95472" => {
 	      'number' => '1005',
