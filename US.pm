@@ -716,6 +716,8 @@ our %Addr_Match = (
 
 {
     use re 'eval';
+
+    # note that expressions like [^,]+ may scan more than you expect
     $Addr_Match{street} = qr/
         (?:
           # special case for addresses like 100 South Street
@@ -801,14 +803,12 @@ our %Addr_Match = (
 
     $Addr_Match{intersection} = qr/^\W*
 	   $Addr_Match{street}\W*?	
-	    (?{ @_{qw{prefix1 street1 type1 suffix1}}
-		= delete @_{qw{prefix street type suffix }} })
 
 	\s+$Addr_Match{corner}\s+
 
+	    (?{ exists $_{$_} and $_{$_.1} = delete $_{$_} for (qw{prefix street type suffix})})
 	   $Addr_Match{street}\W+
-	    (?{ @_{qw{prefix2 street2 type2 suffix2}}
-		= delete @_{qw{prefix street type suffix }} })
+	    (?{ exists $_{$_} and $_{$_.2} = delete $_{$_} for (qw{prefix street type suffix})})
 
 	   $Addr_Match{place}
 	\W*$/ix;
@@ -894,11 +894,14 @@ sub parse_intersection {
         or return undef;
 
     my %part = %_;
-    if ( $part{type2} and $part{type2} =~ s/s\W*$//ios ) {
-        if ( $part{type2} =~ /^$Addr_Match{type}$/ios && ! $part{type1} ) {
-            $part{type1} = $part{type2};
-        } else {
-            $part{type2} .= "s";
+    # if we've a type2 and type1 is either missing or the same,
+    # and the type seems plural,
+    # and is still valid if the trailing 's' is removed, then remove it.
+    # So "X & Y Streets" becomes "X Street" and "Y Street".
+    if ($part{type2} && (!$part{type1} or $part{type1} eq $part{type2})) {
+        my $type = $part{type2};
+        if ($type =~ s/s\W*$//ios and $type =~ /^$Addr_Match{type}$/ios) {
+            $part{type1} = $part{type2} = $type;
         }
     }
 
