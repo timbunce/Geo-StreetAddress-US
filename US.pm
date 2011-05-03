@@ -8,19 +8,25 @@ Geo::StreetAddress::US - Perl extension for parsing US street addresses
 
   use Geo::StreetAddress::US;
 
-  my $hashref = Geo::StreetAddress::US->parse_location(
+  $hashref = Geo::StreetAddress::US->parse_location(
 		"1005 Gravenstein Hwy N, Sebastopol CA 95472" );
 
-  my $hashref = Geo::StreetAddress::US->parse_location(
+  $hashref = Geo::StreetAddress::US->parse_location(
 		"Hollywood & Vine, Los Angeles, CA" );
 
-  my $hashref = Geo::StreetAddress::US->parse_address(
+  $hashref = Geo::StreetAddress::US->parse_address(
 		"1600 Pennsylvania Ave, Washington, DC" );
 
-  my $hashref = Geo::StreetAddress::US->parse_intersection(
+  $hashref = Geo::StreetAddress::US->parse_address(
+		"1600 Pennsylvania Ave, Washington, DC" );
+
+  $hashref = Geo::StreetAddress::US->parse_informal_address(
+		"Lot 3 Pennsylvania Ave" );
+
+  $hashref = Geo::StreetAddress::US->parse_intersection(
 		"Mission Street at Valencia Street, San Francisco, CA" );
 
-  my $normal = Geo::StreetAddress::US->normalize_address( \%spec );
+  $hashref = Geo::StreetAddress::US->normalize_address( \%spec );
       # the parse_* methods call this automatically...
 
 =head1 DESCRIPTION
@@ -43,92 +49,84 @@ corresponding key will be set to C<undef> in the hash.
 
 Future versions of this module may add extra fields.
 
-=head2 ADDRESS SPECIFIER
+=head1 ADDRESS SPECIFIER
 
-=over 4
-
-=item number
+=head2 number
 
 House or street number.
 
-=item prefix
+=head2 prefix
 
 Directional prefix for the street, such as N, NE, E, etc.  A given prefix
 should be one to two characters long.
 
-=item street
+=head2 street
 
 Name of the street, without directional or type qualifiers.
 
-=item type
+=head2 type
 
 Abbreviated street type, e.g. Rd, St, Ave, etc. See the USPS official
 type abbreviations at L<http://www.usps.com/ncsc/lookups/abbr_suffix.txt> 
 for a list of abbreviations used.
 
-=item suffix
+=head2 suffix
 
 Directional suffix for the street, as above.
 
-=item city
+=head2 city
 
 Name of the city, town, or other locale that the address is situated in.
 
-=item state
+=head2 state
 
 The state which the address is situated in, given as its two-letter
 postal abbreviation. See L<http://www.usps.com/ncsc/lookups/abbr_state.txt>
 for a list of abbreviations used.
 
-=item zip
+=head2 zip
 
 Five digit ZIP postal code for the address, including leading zero, if needed.
 
-=item sec_unit_type
+=head2 sec_unit_type
 
 If the address includes a Secondary Unit Designator, such as a room, suite or
 appartment, the C<sec_unit_type> field will indicate the type of unit.
 
-=item sec_unit_num
+=head2 sec_unit_num
 
 If the address includes a Secondary Unit Designator, such as a room, suite or appartment,
 the C<sec_unit_num> field will indicate the number of the unit (which may not be numeric).
 
-=back
+=head1 INTERSECTION SPECIFIER
 
-=head2 INTERSECTION SPECIFIER
-
-=over 4
-
-=item prefix1, prefix2
+=head2 prefix1, prefix2
 
 Directional prefixes for the streets in question.
 
-=item street1, street2
+=head2 street1, street2
 
 Names of the streets in question.
 
-=item type1, type2
+=head2 type1, type2
 
 Street types for the streets in question.
 
-=item suffix1, suffix2
+=head2 suffix1, suffix2
 
 Directional suffixes for the streets in question.
 
-=item city
+=head2 city
 
 City or locale containing the intersection, as above.
 
-=item state
+=head2 state
 
 State abbreviation, as above.
 
-=item zip
+=head2 zip
 
 Five digit ZIP code, as above.
-
-=back
 
 =cut 
 
@@ -145,13 +143,11 @@ uses to recognize different bits of US street addresses. Although you
 will probably not need them, they are documented here for completeness's
 sake.
 
-=over 4
-
-=item %Directional
+=head2 %Directional
 
 Maps directional names (north, northeast, etc.) to abbreviations (N, NE, etc.).
 
-=item %Direction_Code
+=head2 %Direction_Code
 
 Maps directional abbreviations to directional names.
 
@@ -170,7 +166,7 @@ our %Directional = (
 
 our %Direction_Code = reverse %Directional;
 
-=item %Street_Type
+=head2 %Street_Type
 
 Maps lowercased USPS standard street types to their canonical postal
 abbreviations as found in TIGER/Line.  See eg/get_street_abbrev.pl in
@@ -545,7 +541,7 @@ our %Street_Type = (
 
 our %_Street_Type_List = map { $_ => 1 } %Street_Type; 
 
-=item %State_Code
+=head2 %State_Code
 
 Maps lowercased US state and territory names to their canonical two-letter
 postal abbreviations. See eg/get_state_abbrev.pl in the distrbution
@@ -615,7 +611,7 @@ our %State_Code = (
     "wyoming" => "WY",
 );
 
-=item %State_FIPS
+=head2 %State_FIPS
 
 Maps two-digit FIPS-55 US state and territory codes (including the
 leading zero!) as found in TIGER/Line to the state's canonical two-letter
@@ -683,12 +679,15 @@ our %State_FIPS = (
 
 our %FIPS_State = reverse %State_FIPS;
 
-=item %Addr_Match
+=head2 %Addr_Match
 
 A hash of compiled regular expressions corresponding to different
 types of address or address portions. Defined regexen include
 type, number, fraction, state, direct(ion), dircode, zip, corner,
 street, place, address, and intersection.
+
+Direct use of these patterns is not recommended because they may change in
+subtle ways between releases.
 
 =cut
 
@@ -839,7 +838,7 @@ our %Normalize_Map = (
     state   => \%State_Code,
 );
 
-=item $Old_Undef_Fields_Behaviour
+=head2 $Old_Undef_Fields_Behaviour
 
 Restores the pre version 1.00 behaviour for unmatched fields.
 Normally unmatched fields don't exist in the result hash.  If this variable is
@@ -851,8 +850,6 @@ migration and may be removed in a future version.
 
 our $Old_Undef_Fields_Behaviour = 1;
 
-=back
-
 =head1 CLASS METHODS
 
 =head2 parse_location
@@ -860,9 +857,9 @@ our $Old_Undef_Fields_Behaviour = 1;
     $spec = Geo::StreetAddress::US->parse_location( $string )
 
 Parses any address or intersection string and returns the appropriate
-specifier. If $string matches L</corner> then parse_intersection() is used.
-Else parse_address() is called and if that returns false then
-parse_informal_address() is called.
+specifier. If $string matches the $Addr_Match{corner} pattern then
+parse_intersection() is used.  Else parse_address() is called and if that
+returns false then parse_informal_address() is called.
 
 =cut
 
@@ -881,8 +878,9 @@ sub parse_location {
 
     $spec = Geo::StreetAddress::US->parse_address( $address_string )
 
-Parses a street address into an address specifier using the L</address>
-pattern, returning undef if the address cannot be parsed.
+Parses a street address into an address specifier using the $Addr_Match{address}
+pattern. Returning undef if the address cannot be parsed as a complete formal
+address.
 
 You may want to use parse_location() instead.
 
@@ -907,6 +905,8 @@ Acts like parse_address() except that it handles a wider range of address
 formats because it uses the L</informal_address> pattern. That means a
 unit can come first, a street number is optional, and the city and state aren't
 needed. Which means that informal addresses like "#42 123 Main St" can be parsed.
+
+Returns undef if the address cannot be parsed.
 
 You may want to use parse_location() instead.
 
