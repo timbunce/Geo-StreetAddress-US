@@ -855,7 +855,9 @@ our $Old_Undef_Fields_Behaviour = 1;
 
 =head1 CLASS METHODS
 
-=item Geo::StreetAddress::US->parse_location( $string )
+=head2 parse_location
+
+    $spec = Geo::StreetAddress::US->parse_location( $string )
 
 Parses any address or intersection string and returns the appropriate
 specifier. If $string matches L</corner> then parse_intersection() is used.
@@ -875,7 +877,9 @@ sub parse_location {
 }
 
 
-=item Geo::StreetAddress::US->parse_address( $address_string )
+=head2 parse_address
+
+    $spec = Geo::StreetAddress::US->parse_address( $address_string )
 
 Parses a street address into an address specifier using the L</address>
 pattern, returning undef if the address cannot be parsed.
@@ -895,7 +899,9 @@ sub parse_address {
 }
 
 
-=item Geo::StreetAddress::US->parse_informal_address( $address_string )
+=head2 parse_informal_address
+
+    $spec = Geo::StreetAddress::US->parse_informal_address( $address_string )
 
 Acts like parse_address() except that it handles a wider range of address
 formats because it uses the L</informal_address> pattern. That means a
@@ -917,7 +923,9 @@ sub parse_informal_address {
 }
 
 
-=item Geo::StreetAddress::US->parse_intersection( $intersection_string )
+=head2 parse_intersection
+
+    $spec = Geo::StreetAddress::US->parse_intersection( $intersection_string )
 
 Parses an intersection string into an intersection specifier, returning
 undef if the address cannot be parsed. You probably want to use
@@ -948,13 +956,15 @@ sub parse_intersection {
 }
 
 
-=item Geo::StreetAddress::US->normalize_address( $spec )
+=head2 normalize_address
+
+    $spec = Geo::StreetAddress::US->normalize_address( $spec )
 
 Takes an address or intersection specifier, and normalizes its components,
 stripping out all leading and trailing whitespace and punctuation, and
 substituting official abbreviations for prefix, suffix, type, and state values.
 Also, city names that are prefixed with a directional abbreviation (e.g. N, NE,
-etc.) have the abbreviation expanded.  The specifier is returned.
+etc.) have the abbreviation expanded.  The original specifier ref is returned.
 
 Typically, you won't need to use this method, as the C<parse_*()> methods
 call it for you.
