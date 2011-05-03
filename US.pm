@@ -827,6 +827,18 @@ our %Normalize_Map = (
     state   => \%State_Code,
 );
 
+=item $Old_Undef_Fields_Behaviour
+
+Restores the pre version 1.00 behaviour for unmatched fields.
+Normally unmatched fields don't exist in the result hash.  If this variable is
+set true, some unmatched fields are returned with undef values, instead of not
+existing in the hash at all.  This mechanism is a temporary measure to aid
+migration and may be removed in a future version.
+
+=cut
+
+our $Old_Undef_Fields_Behaviour = 1;
+
 =back
 
 =head1 CLASS METHODS
@@ -847,6 +859,7 @@ sub parse_location {
     }
 }
 
+
 =item Geo::StreetAddress::US->parse_address( $address_string )
 
 Parses a street address into an address specifier, returning undef if
@@ -859,13 +872,11 @@ sub parse_address {
     my ($class, $addr) = @_;
     local %_;
 
-    if ($addr =~ /$Addr_Match{address}/ios) {
-	my %part = %_;
-	### the next line is just to make fossil tests work
-	$part{$_} ||= undef for qw{prefix type suffix city state zip};
-	return $class->normalize_address(\%part);
-    }
+    $addr =~ /$Addr_Match{address}/ios
+        or return undef;
+    return $class->normalize_address({ %_ });
 }
+
 
 =item Geo::StreetAddress::US->parse_intersection( $intersection_string )
 
@@ -879,23 +890,21 @@ sub parse_intersection {
     my ($class, $addr) = @_;
     local %_;
 
-    if ($addr =~ /$Addr_Match{intersection}/ios) {
-	my %part = %_;
-	### the next line is just to make fossil tests work
-	$part{$_} ||= undef 
-	    for qw{prefix1 type1 suffix1 prefix2 type2 suffix2 city state zip};
+    $addr =~ /$Addr_Match{intersection}/ios
+        or return undef;
 
-	if ( $part{type2} and $part{type2} =~ s/s\W*$//ios ) {
-	    if ( $part{type2} =~ /^$Addr_Match{type}$/ios && ! $part{type1} ) {
-		$part{type1} = $part{type2};
-	    } else {
-		$part{type2} .= "s";
-	    }
-	}
-
-	return $class->normalize_address(\%part);
+    my %part = %_;
+    if ( $part{type2} and $part{type2} =~ s/s\W*$//ios ) {
+        if ( $part{type2} =~ /^$Addr_Match{type}$/ios && ! $part{type1} ) {
+            $part{type1} = $part{type2};
+        } else {
+            $part{type2} .= "s";
+        }
     }
+
+    return $class->normalize_address(\%part);
 }
+
 
 =item Geo::StreetAddress::US->normalize_address( $spec )
 
@@ -920,6 +929,13 @@ sub normalize_address {
     # strip off punctuation
     defined($_) && s/^\s+|\s+$|[^\w\s\-]//gos for values %$part;
 
+    if ($Old_Undef_Fields_Behaviour) {
+        my @undef_fields = (exists $part->{street1})
+            ? qw{prefix1 type1 suffix1 prefix2 type2 suffix2 city state zip}
+            : qw{prefix  type  suffix                        city state zip};
+        $part->{$_} ||= undef for @undef_fields;
+    }
+
     while (my ($key, $map) = each %Normalize_Map) {
 	$part->{$key} = $map->{lc $part->{$key}}
               if  exists $part->{$key}
@@ -939,6 +955,7 @@ sub normalize_address {
 
     return $part;
 }
+
 
 1;
 __END__
