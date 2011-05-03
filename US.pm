@@ -30,8 +30,8 @@ parser for the United States. Its basic goal is to be as forgiving as possible
 when parsing user-provided address strings. Geo::StreetAddress::US knows about
 directional prefixes and suffixes, fractional building numbers, building units,
 grid-based addresses (such as those used in parts of Utah), 5 and 9 digit ZIP
-codes, and all of the official USPS abbreviations for street types and state
-names.
+codes, and all of the official USPS abbreviations for street types, state
+names and secondary unit designators.
 
 =head1 RETURN VALUES
 
@@ -972,6 +972,8 @@ at any time. If this module does not do what you want, you might give the
 othersa try. All three modules are available from the CPAN.
 
 You can see Geo::StreetAddress::US in action at L<http://geocoder.us/>.
+
+USPS Postal Addressing Standards: L<http://pe.usps.com/text/pub28/welcome.htm>
 
 =head1 APPRECIATION
 
