@@ -784,11 +784,15 @@ our %Addr_Match = (
             $Addr_Match{sec_unit_type_unnumbered}
         /ix;
 
-    $Addr_Match{place} = qr/
+    $Addr_Match{city_and_state} = qr/
 	(?:
 	    ([^\d,]+?)\W+			(?{ $_{city}   = $^N })
-	    ($Addr_Match{state})\W*		(?{ $_{state}  = $^N })
-	)?
+	    ($Addr_Match{state})		(?{ $_{state}  = $^N })
+	)
+	/ix;
+
+    $Addr_Match{place} = qr/
+	(?:$Addr_Match{city_and_state}\W*)?
 	(?:($Addr_Match{zip})			(?{ $_{zip}    = $^N }))?
 	/ix;
 
@@ -800,15 +804,13 @@ our %Addr_Match = (
 	   $Addr_Match{place}
 	\W*$/ix;
 
-    # XXX experimental
-    # unit can come first, street number is optional, city and state aren't needed
     $Addr_Match{informal_address} = qr/
         ^\s*
-        (?:$Addr_Match{unit}\W+)?
+        (?:$Addr_Match{sec_unit}\W+)?
         (  $Addr_Match{number})?\W*             (?{ $_{number} = $^N })
         (?:$Addr_Match{fraction}\W*)?
            $Addr_Match{street}\W+
-        (?:$Addr_Match{unit}\W+)?
+        (?:$Addr_Match{sec_unit}\W+)?
         (?:$Addr_Match{place})?
         /ix;
 
