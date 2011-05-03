@@ -730,9 +730,9 @@ our %Addr_Match = (
             (?:[^\w,]+($Addr_Match{direct})\b	(?{ $_{suffix} = $^N }))?
            |
             ([^,]*\d)				(?{ $_{street} = $^N })
-            ($Addr_Match{direct})\b		(?{ $_{suffix} = $^N })
+            ($Addr_Match{direct})\b		(?{ $_{suffix} = $^N; $_{type}||='' })
            |
-            ([^,]+?)				(?{ $_{street} = $^N })
+            ([^,]+?)				(?{ $_{street} = $^N; $_{type}||='' })
             (?:[^\w,]+($Addr_Match{type})\b	(?{ $_{type}   = $^N }))?
             (?:[^\w,]+($Addr_Match{direct})\b	(?{ $_{suffix} = $^N }))?
           )
@@ -850,7 +850,7 @@ migration and may be removed in a future version.
 
 =cut
 
-our $Old_Undef_Fields_Behaviour = 1;
+our $Old_Undef_Fields_Behaviour = 0;
 
 =head1 CLASS METHODS
 
