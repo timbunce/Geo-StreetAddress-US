@@ -10,6 +10,7 @@ Revision history for Perl extension Geo::StreetAddress::US.
     Added note to docs that future versions may add extra fields.
     Increased minimum perl version to 5.8.1.
     Cut the out-dated README down to a minimal description.
+    A unit number with a hash but no designator eg "#42" sets unit=>'unit'.
 
 0.99  May 17 2005
 

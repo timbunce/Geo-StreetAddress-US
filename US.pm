@@ -91,7 +91,7 @@ appartment, the C<unit> field will indicate the type of unit.
 
 =item unitnum
 
-If the address includes a unit number, such as a room, suite or appartment,
+If the address includes a Secondary Unit Designator, such as a room, suite or appartment,
 the C<unitnum> field will indicate the number of the unit (which may not be numeric).
 
 =back
@@ -132,7 +132,7 @@ Five digit ZIP code, as above.
 
 =cut 
 
-use 5.6.1;
+use 5.008_001;
 use strict;
 use warnings;
 
@@ -741,7 +741,6 @@ our %Addr_Match = (
     # http://www.usps.com/ncsc/lookups/abbreviations.html#secunitdesig
     # TODO add support for those that don't require a number
     # TODO map to standard names/abbreviations
-
     $Addr_Match{sec_unit_type} = qr/
           (su?i?te
             |p\W*[om]\W*b(?:ox)?
@@ -761,7 +760,9 @@ our %Addr_Match = (
         /ix;
 
     $Addr_Match{unit} = qr/
-        (?: $Addr_Match{sec_unit_type} \W+|\#\W*)
+        (?: (?:$Addr_Match{sec_unit_type} \W+)
+            | \#\W*                             (?{ $_{unit}   = 'unit' })
+        )
         (  [\w-]+)				(?{ $_{unitnum}= $^N })
         /ix;
 
@@ -885,7 +886,7 @@ Takes an address or intersection specifier, and normalizes its components,
 stripping out all leading and trailing whitespace and punctuation, and
 substituting official abbreviations for prefix, suffix, type, and state values.
 Also, city names that are prefixed with a directional abbreviation (e.g. N, NE,
-etc.) have the abbreviation expanded.  The normalized specifier is returned.
+etc.) have the abbreviation expanded.  The specifier is returned.
 
 Typically, you won't need to use this method, as the C<parse_*()> methods
 call it for you.
