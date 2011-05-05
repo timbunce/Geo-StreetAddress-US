@@ -134,7 +134,7 @@ use 5.008_001;
 use strict;
 use warnings;
 
-our $VERSION = '0.99';
+our $VERSION = '1.01';
 
 =head1 GLOBAL VARIABLES
 
