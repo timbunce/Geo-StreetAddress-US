@@ -694,10 +694,11 @@ subtle ways between releases.
 our %Addr_Match = (
     type    => join("|", keys %_Street_Type_List),
     fraction => qr{\d+\/\d+},
-    state   => join("|",
+    state   => '\b(?:'.join("|",
         # escape spaces in state names (e.g., "new york" --> "new\\ york")
         # so they still match in the x environment below
-        map { ( quotemeta $_) } keys %State_Code, values %State_Code),
+        map { ( quotemeta $_) } keys %State_Code, values %State_Code
+        ).')\b',
     direct  => join("|",
 		    # map direction names to direction codes
                     keys %Directional,
@@ -761,13 +762,13 @@ our %Addr_Match = (
             |uni?t
             |bu?i?ldi?n?g
             |ha?nga?r
-            |lot
+            |lo?t
             |pier
             |slip
             |spa?ce?
             |stop
             |tra?i?le?r
-            |box)\b				(?{ $_{sec_unit_type}   = $^N })
+            |box)(?![a-z])			(?{ $_{sec_unit_type}   = $^N })
         /ix;
 
     $Addr_Match{sec_unit_type_unnumbered} = qr/
@@ -785,7 +786,7 @@ our %Addr_Match = (
 
     $Addr_Match{sec_unit} = qr/
         (:?
-            (?: (?:$Addr_Match{sec_unit_type_numbered} \W+)
+            (?: (?:$Addr_Match{sec_unit_type_numbered} \W*)
                 | (\#)\W*                       (?{ $_{sec_unit_type}   = $^N })
             )
             (  [\w-]+)				(?{ $_{sec_unit_num}    = $^N })

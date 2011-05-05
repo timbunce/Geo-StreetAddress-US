@@ -333,6 +333,15 @@ my %address = (
           'type' => 'Dr',
           'prefix' => 'S'
         },
+    "lt42 99 Some Road, Some City LA" => { # no space before sec_unit_num
+          'sec_unit_num' => '42',
+          'city' => 'Some City',
+          'number' => '99',
+          'street' => 'Some',
+          'sec_unit_type' => 'lt',
+          'type' => 'Rd',
+          'state' => 'LA'
+        },
 );
 
 my @failures = (
