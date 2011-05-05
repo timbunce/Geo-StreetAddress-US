@@ -170,6 +170,30 @@ my %address = (
 	      'suffix' => 'E',
 	      'prefix' => 'S'
 	    },
+    "550 S 400 E #3206, Salt Lake City UT 84111" => {
+            'number' => '550',
+            'street' => '400',
+            'state' => 'UT',
+            'sec_unit_num' => '3206',
+            'zip' => '84111',
+            'city' => 'Salt Lake City',
+            'suffix' => 'E',
+            'type' => '',
+            'sec_unit_type' => '#',
+            'prefix' => 'S'
+    },
+    "6641 N 2200 W Apt D304 Park City, UT 84098" => {
+          'number' => '6641',
+          'street' => '2200',
+          'state' => 'UT',
+          'sec_unit_num' => 'D304',
+          'zip' => '84098',
+          'city' => 'Park City',
+          'suffix' => 'W',
+          'type' => '',
+          'sec_unit_type' => 'Apt',
+          'prefix' => 'N'
+    },
     "100 South St, Philadelphia, PA" => {
 	      'number' => '100',
 	      'street' => 'South',
