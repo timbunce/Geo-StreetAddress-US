@@ -1,5 +1,5 @@
 use blib;
-use Test::More tests => 43;
+use Test::More;
 use strict;
 use warnings;
 use Data::Dumper;
@@ -292,6 +292,23 @@ my %address = (
           'prefix' => 'S',
           'sec_unit_type' => 'lobby',
         },
+    "(233 S Wacker Dr lobby 60606)" => { # surrounding punctuation
+          'number' => '233',
+          'street' => 'Wacker',
+          'zip' => '60606',
+          'type' => 'Dr',
+          'prefix' => 'S',
+          'sec_unit_type' => 'lobby',
+        },
+    "#42 233 S Wacker Dr 60606" => { # leading numbered secondary unit type
+          'sec_unit_num' => '42',
+          'zip' => '60606',
+          'number' => '233',
+          'street' => 'Wacker',
+          'sec_unit_type' => '#',
+          'type' => 'Dr',
+          'prefix' => 'S'
+        },
 );
 
 my @failures = (
@@ -313,3 +330,5 @@ for my $fail (@failures) {
     my $parse = Geo::StreetAddress::US->parse_location( $fail );
     ok( !$parse || !defined($parse->{state}), "can't parse $fail" );
 }
+
+done_testing();

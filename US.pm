@@ -693,7 +693,7 @@ subtle ways between releases.
 
 our %Addr_Match = (
     type    => join("|", keys %_Street_Type_List),
-    number  => qr/\d+-?\d*/,
+    number  => qr/(\d+-?\d*) (?{ $_{number} = $^N })/x,
     fraction => qr{\d+\/\d+},
     state   => join("|",
         # escape spaces in state names (e.g., "new york" --> "new\\ york")
@@ -796,22 +796,30 @@ our %Addr_Match = (
 	(?:($Addr_Match{zip})			(?{ $_{zip}    = $^N }))?
 	/ix;
 
-    $Addr_Match{address} = qr/^\W*
-	(  $Addr_Match{number})\W*		(?{ $_{number} = $^N })
+    $Addr_Match{address} = qr/
+        ^
+        [^\w\#]*    # skip non-word chars except # (eg unit)
+	(  $Addr_Match{number} )\W*
         (?:$Addr_Match{fraction}\W*)?
 	   $Addr_Match{street}\W+
 	(?:$Addr_Match{sec_unit}\W+)?
 	   $Addr_Match{place}
-	\W*$/ix;
+	\W*         # require on non-word chars at end
+        $           # right up to end of string
+        /ix;
+
+    my $sep = qr/(?:\W+|\Z)/;
 
     $Addr_Match{informal_address} = qr/
-        ^\s*
-        (?:$Addr_Match{sec_unit}\W+)?
-        (  $Addr_Match{number})?\W*             (?{ $_{number} = $^N })
+        ^
+        \s*         # skip leading whitespace
+        (?:$Addr_Match{sec_unit} $sep)?
+        (?:$Addr_Match{number})?\W*
         (?:$Addr_Match{fraction}\W*)?
-           $Addr_Match{street}\W+
-        (?:$Addr_Match{sec_unit}\W+)?
+           $Addr_Match{street} $sep
+        (?:$Addr_Match{sec_unit} $sep)?
         (?:$Addr_Match{place})?
+        # don't require match to reach end of string
         /ix;
 
     $Addr_Match{intersection} = qr/^\W*
@@ -981,7 +989,7 @@ sub normalize_address {
     my ($class, $part) = @_;
     
     # strip off punctuation
-    defined($_) && s/^\s+|\s+$|[^\w\s\-]//gos for values %$part;
+    defined($_) && s/^\s+|\s+$|[^\w\s\-\#\&]//gos for values %$part;
 
     if ($Old_Undef_Fields_Behaviour) {
         my @undef_fields = (exists $part->{street1})
