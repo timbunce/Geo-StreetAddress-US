@@ -133,7 +133,7 @@ use 5.008_001;
 use strict;
 use warnings;
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 =head1 GLOBAL VARIABLES
 
@@ -738,7 +738,9 @@ but if you subsequently change the globals, you should run it again.
 sub init {
 
     %Direction_Code = reverse %Directional;
+
     %_Street_Type_List = map { $_ => 1 } %Street_Type;
+
     %FIPS_State = reverse %State_FIPS;
 
     use re 'eval';
