@@ -143,6 +143,8 @@ uses to recognize different bits of US street addresses. Although you
 will probably not need them, they are documented here for completeness's
 sake.
 
+=cut
+
 =head2 %Directional
 
 Maps directional names (north, northeast, etc.) to abbreviations (N, NE, etc.).
@@ -164,7 +166,7 @@ our %Directional = (
     northwest	=> "NW",
 );
 
-our %Direction_Code = reverse %Directional;
+our %Direction_Code; # setup in init();
 
 =head2 %Street_Type
 
@@ -539,7 +541,7 @@ our %Street_Type = (
     wy		=> "way",
 );
 
-our %_Street_Type_List = map { $_ => 1 } %Street_Type; 
+our %_Street_Type_List;	# set up in init() later;
 
 =head2 %State_Code
 
@@ -677,7 +679,7 @@ our %State_FIPS = (
     "78" => "VI",
 );
 
-our %FIPS_State = reverse %State_FIPS;
+our %FIPS_State; # setup in init() later;
 
 =head2 %Addr_Match
 
@@ -690,28 +692,74 @@ Direct use of these patterns is not recommended because they may change in
 subtle ways between releases.
 
 =cut
+ 
+our %Addr_Match; # setup in init()
 
-our %Addr_Match = (
-    type    => join("|", keys %_Street_Type_List),
-    fraction => qr{\d+\/\d+},
-    state   => '\b(?:'.join("|",
-        # escape spaces in state names (e.g., "new york" --> "new\\ york")
-        # so they still match in the x environment below
-        map { ( quotemeta $_) } keys %State_Code, values %State_Code
-        ).')\b',
-    direct  => join("|",
-		    # map direction names to direction codes
-                    keys %Directional,
-		    # also map the dotted version of the code to the code itself
-                    map { my $c = $_;
-                          $c =~ s/(\w)/$1./g;
-                          ( quotemeta $c, $_ ) }
-                    sort { length $b <=> length $a }
-                    values %Directional),
-    dircode => join("|", keys %Direction_Code), 
-    zip	    => qr/\d{5}(?:-?\d{4})?/,  # XXX add \b?
-    corner  => qr/(?:\band\b|\bat\b|&|\@)/i,
+init();
+
+our %Normalize_Map = (
+    prefix  => \%Directional,
+    prefix1 => \%Directional,
+    prefix2 => \%Directional,
+    suffix  => \%Directional,
+    suffix1 => \%Directional,
+    suffix2 => \%Directional,
+    type    => \%Street_Type,
+    type1   => \%Street_Type,
+    type2   => \%Street_Type,
+    state   => \%State_Code,
 );
+
+=head2 $Old_Undef_Fields_Behaviour
+
+Restores the pre version 1.00 behaviour for unmatched fields.
+Normally unmatched fields don't exist in the result hash.  If this variable is
+set true, some unmatched fields are returned with undef values, instead of not
+existing in the hash at all.  This mechanism is a temporary measure to aid
+migration and may be removed in a future version.
+
+=cut
+
+our $Old_Undef_Fields_Behaviour = 0;
+
+=head1 CLASS METHODS
+
+=head2 init
+
+    $Geo::StreetAddress::US::Street_Type{'cur'}='curv'; &Geo::StreetAddress::US::init(); # Add another street type mapping.
+
+Runs the setup on globals.  Note that this is run when the module is loaded,
+but if you subsequently change the globals, you should run it again
+
+=cut
+
+sub init {
+	
+    %Direction_Code = reverse %Directional;
+    %_Street_Type_List = map { $_ => 1 } %Street_Type;
+    %FIPS_State = reverse %State_FIPS;
+
+    %Addr_Match = (
+        type    => join("|", keys %_Street_Type_List),
+        fraction => qr{\d+\/\d+},
+        state   => '\b(?:'.join("|",
+   		    # escape spaces in state names (e.g., "new york" --> "new\\ york")
+	        # so they still match in the x environment below
+            map { ( quotemeta $_) } keys %State_Code, values %State_Code
+            ).')\b',
+        direct  => join("|",
+			    # map direction names to direction codes
+                        keys %Directional,
+			    # also map the dotted version of the code to the code itself
+                        map { my $c = $_;
+                              $c =~ s/(\w)/$1./g;
+                              ( quotemeta $c, $_ ) }
+                        sort { length $b <=> length $a }
+                        values %Directional),
+        dircode => join("|", keys %Direction_Code), 
+        zip	    => qr/\d{5}(?:-?\d{4})?/,  # XXX add \b?
+        corner  => qr/(?:\band\b|\bat\b|&|\@)/i,
+    );
 
 {
     use re 'eval';
@@ -846,32 +894,7 @@ our %Addr_Match = (
 	\W*$/ix;
 }
 
-our %Normalize_Map = (
-    prefix  => \%Directional,
-    prefix1 => \%Directional,
-    prefix2 => \%Directional,
-    suffix  => \%Directional,
-    suffix1 => \%Directional,
-    suffix2 => \%Directional,
-    type    => \%Street_Type,
-    type1   => \%Street_Type,
-    type2   => \%Street_Type,
-    state   => \%State_Code,
-);
-
-=head2 $Old_Undef_Fields_Behaviour
-
-Restores the pre version 1.00 behaviour for unmatched fields.
-Normally unmatched fields don't exist in the result hash.  If this variable is
-set true, some unmatched fields are returned with undef values, instead of not
-existing in the hash at all.  This mechanism is a temporary measure to aid
-migration and may be removed in a future version.
-
-=cut
-
-our $Old_Undef_Fields_Behaviour = 0;
-
-=head1 CLASS METHODS
+}
 
 =head2 parse_location
 
