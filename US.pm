@@ -44,7 +44,7 @@ names and secondary unit designators.
 Most Geo::StreetAddress::US methods return a reference to a hash containing
 address or intersection information. This
 "address specifier" hash may contain any of the following fields for a
-given address. If a given field is not present in the address, the 
+given address. If a given field is not present in the address, the
 corresponding key will be set to C<undef> in the hash.
 
 Future versions of this module may add extra fields.
@@ -67,7 +67,7 @@ Name of the street, without directional or type qualifiers.
 =head2 type
 
 Abbreviated street type, e.g. Rd, St, Ave, etc. See the USPS official
-type abbreviations at L<http://www.usps.com/ncsc/lookups/abbr_suffix.txt> 
+type abbreviations at L<http://pe.usps.com/text/pub28/pub28apc.html>
 for a list of abbreviations used.
 
 =head2 suffix
@@ -81,8 +81,7 @@ Name of the city, town, or other locale that the address is situated in.
 =head2 state
 
 The state which the address is situated in, given as its two-letter
-postal abbreviation. See L<http://www.usps.com/ncsc/lookups/abbr_state.txt>
-for a list of abbreviations used.
+postal abbreviation.  for a list of abbreviations used.
 
 =head2 zip
 
@@ -128,7 +127,7 @@ State abbreviation, as above.
 
 Five digit ZIP code, as above.
 
-=cut 
+=cut
 
 use 5.008_001;
 use strict;
@@ -692,7 +691,7 @@ Direct use of these patterns is not recommended because they may change in
 subtle ways between releases.
 
 =cut
- 
+
 our %Addr_Match; # setup in init()
 
 init();
@@ -726,18 +725,23 @@ our $Old_Undef_Fields_Behaviour = 0;
 
 =head2 init
 
-    $Geo::StreetAddress::US::Street_Type{'cur'}='curv'; &Geo::StreetAddress::US::init(); # Add another street type mapping.
+    # Add another street type mapping:
+    $Geo::StreetAddress::US::Street_Type{'cur'}='curv';
+    # Re-initialize to pick up the change
+    Geo::StreetAddress::US::init();
 
-Runs the setup on globals.  Note that this is run when the module is loaded,
-but if you subsequently change the globals, you should run it again
+Runs the setup on globals.  This is run automatically when the module is loaded,
+but if you subsequently change the globals, you should run it again.
 
 =cut
 
 sub init {
-	
+
     %Direction_Code = reverse %Directional;
     %_Street_Type_List = map { $_ => 1 } %Street_Type;
     %FIPS_State = reverse %State_FIPS;
+
+    use re 'eval';
 
     %Addr_Match = (
         type    => join("|", keys %_Street_Type_List),
@@ -756,13 +760,10 @@ sub init {
                               ( quotemeta $c, $_ ) }
                         sort { length $b <=> length $a }
                         values %Directional),
-        dircode => join("|", keys %Direction_Code), 
+        dircode => join("|", keys %Direction_Code),
         zip	    => qr/\d{5}(?:-?\d{4})?/,  # XXX add \b?
         corner  => qr/(?:\band\b|\bat\b|&|\@)/i,
     );
-
-{
-    use re 'eval';
 
     # we don't include letters in the number regex because we want to
     # treat "42S" as "42 S" (42 South). For example,
@@ -798,7 +799,7 @@ sub init {
 	/ix;
 
 
-    # http://www.usps.com/ncsc/lookups/abbreviations.html#secunitdesig
+    # http://pe.usps.com/text/pub28/pub28c2_003.htm
     # TODO add support for those that don't require a number
     # TODO map to standard names/abbreviations
     $Addr_Match{sec_unit_type_numbered} = qr/
@@ -892,8 +893,6 @@ sub init {
 
 	   $Addr_Match{place}
 	\W*$/ix;
-}
-
 }
 
 =head2 parse_location
@@ -1023,7 +1022,7 @@ sub normalize_address {
     my ($class, $part) = @_;
 
     #m/^_/ and delete $part->{$_} for keys %$part; # for debug
-    
+
     # strip off some punctuation
     defined($_) && s/^\s+|\s+$|[^\w\s\-\#\&]//gos for values %$part;
 
@@ -1040,7 +1039,7 @@ sub normalize_address {
 	      and exists $map->{lc $part->{$key}};
     }
 
-    $part->{$_} = ucfirst lc $part->{$_} 
+    $part->{$_} = ucfirst lc $part->{$_}
 	for grep(exists $part->{$_}, qw( type type1 type2 ));
 
     # attempt to expand directional prefixes on place names
