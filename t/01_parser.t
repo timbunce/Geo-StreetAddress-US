@@ -342,6 +342,14 @@ my %address = (
           'type' => 'Rd',
           'state' => 'LA'
         },
+    "36401 County Road 43, Eaton, CO 80615" => { # numbered County Road
+          'city' => 'Eaton',
+          'zip' => '80615',
+          'number' => '36401',
+          'street' => 'County Road 43',
+          'type' => 'Rd',
+          'state' => 'CO'
+        },
 );
 
 my @failures = (

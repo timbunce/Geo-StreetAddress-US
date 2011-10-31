@@ -5,7 +5,9 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME           => 'Geo::StreetAddress::US',
     VERSION_FROM   => 'US.pm', # finds $VERSION
-    PREREQ_PM      => {}, # e.g., Module::Name => 1.1
+    PREREQ_PM      => {
+        'Class::Data::Inheritable' => '0.04',
+    },
     AUTHOR         => 'Tim Bunce <Tim.Bunce@pobox.com>',
     dist  => {
         DIST_DEFAULT=> 'clean distcheck disttest tardist',

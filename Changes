@@ -1,5 +1,10 @@
 Revision history for Perl extension Geo::StreetAddress::US.
 
+1.03
+
+    Added avoid_redundant_street_type class attribute.
+    Removed temporary $Old_Undef_Fields_Behaviour added in 1.00.
+
 1.02
 
     Add 'cur' as abbreviation for 'curve', Fred Zellinger

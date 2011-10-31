@@ -135,6 +135,8 @@ use warnings;
 
 our $VERSION = '1.02';
 
+use base 'Class::Data::Inheritable';
+
 =head1 GLOBAL VARIABLES
 
 Geo::StreetAddress::US contains a number of global variables which it
@@ -540,7 +542,8 @@ our %Street_Type = (
     wy		=> "way",
 );
 
-our %_Street_Type_List;	# set up in init() later;
+our %_Street_Type_List;     # set up in init() later;
+our %_Street_Type_Match;    # set up in init() later;
 
 =head2 %State_Code
 
@@ -709,17 +712,26 @@ our %Normalize_Map = (
     state   => \%State_Code,
 );
 
-=head2 $Old_Undef_Fields_Behaviour
 
-Restores the pre version 1.00 behaviour for unmatched fields.
-Normally unmatched fields don't exist in the result hash.  If this variable is
-set true, some unmatched fields are returned with undef values, instead of not
-existing in the hash at all.  This mechanism is a temporary measure to aid
-migration and may be removed in a future version.
+=head1 CLASS ACCESSORS
+
+=head2 avoid_redundant_street_type
+
+If true then L</normalize_address> will set the C<type> field to undef
+if the C<street> field contains a word that corresponds to the C<type> in L<\%Street_Type>.
+
+For example, given "4321 Country Road 7", C<street> will be "Country Road 7"
+and C<type> will be "Rd". With avoid_redundant_street_type set true, C<type>
+will be undef because C<street> matches /\b (rd|road) \b/ix;
+
+Also applies to the C<type1> (for C<street1>) and C<type2> (for C<street2>)
+fields for intersections.
+
+The default is false for backwards compatibility.
 
 =cut
 
-our $Old_Undef_Fields_Behaviour = 0;
+BEGIN { __PACKAGE__->mk_classdata('avoid_redundant_street_type' => 0) }
 
 =head1 CLASS METHODS
 
@@ -739,9 +751,19 @@ sub init {
 
     %Direction_Code = reverse %Directional;
 
-    %_Street_Type_List = map { $_ => 1 } %Street_Type;
+    %FIPS_State     = reverse %State_FIPS;
 
-    %FIPS_State = reverse %State_FIPS;
+    %_Street_Type_List  = map { $_ => 1 } %Street_Type;
+
+    # build hash { 'rd' => qr/\b (?: rd|road ) \b/xi, ... }
+    %_Street_Type_Match = map { $_ => $_ } values %Street_Type;
+    while ( my ($type_alt, $type_abbrv) = each %Street_Type ) {
+        $_Street_Type_Match{$type_abbrv} .= "|\Q$type_alt";
+    }
+    %_Street_Type_Match = map {
+        my $alts = $_Street_Type_Match{$_};
+        $_ => qr/\b (?: $alts ) \b/xi;
+    } keys %_Street_Type_Match;
 
     use re 'eval';
 
@@ -1028,13 +1050,6 @@ sub normalize_address {
     # strip off some punctuation
     defined($_) && s/^\s+|\s+$|[^\w\s\-\#\&]//gos for values %$part;
 
-    if ($Old_Undef_Fields_Behaviour) {
-        my @undef_fields = (exists $part->{street1})
-            ? qw{prefix1 type1 suffix1 prefix2 type2 suffix2 city state zip}
-            : qw{prefix  type  suffix                        city state zip};
-        $part->{$_} ||= undef for @undef_fields;
-    }
-
     while (my ($key, $map) = each %Normalize_Map) {
 	$part->{$key} = $map->{lc $part->{$key}}
               if  exists $part->{$key}
@@ -1043,6 +1058,17 @@ sub normalize_address {
 
     $part->{$_} = ucfirst lc $part->{$_}
 	for grep(exists $part->{$_}, qw( type type1 type2 ));
+
+    if ($class->avoid_redundant_street_type) {
+        for my $suffix ('', '1', '2') {
+            next unless my $street = $part->{"street$suffix"};
+            next unless my $type   = $part->{"type$suffix"};
+            my $type_regex = $_Street_Type_Match{lc $type}
+                or die "panic: no _Street_Type_Match for $type";
+            $part->{"type$suffix"} = undef
+                if $street =~ $type_regex;
+        }
+    }
 
     # attempt to expand directional prefixes on place names
     $part->{city} =~ s/^($Addr_Match{dircode})\s+(?=\S)
