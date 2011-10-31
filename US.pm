@@ -9,22 +9,22 @@ Geo::StreetAddress::US - Perl extension for parsing US street addresses
   use Geo::StreetAddress::US;
 
   $hashref = Geo::StreetAddress::US->parse_location(
-		"1005 Gravenstein Hwy N, Sebastopol CA 95472" );
+                "1005 Gravenstein Hwy N, Sebastopol CA 95472" );
 
   $hashref = Geo::StreetAddress::US->parse_location(
-		"Hollywood & Vine, Los Angeles, CA" );
+                "Hollywood & Vine, Los Angeles, CA" );
 
   $hashref = Geo::StreetAddress::US->parse_address(
-		"1600 Pennsylvania Ave, Washington, DC" );
+                "1600 Pennsylvania Ave, Washington, DC" );
 
   $hashref = Geo::StreetAddress::US->parse_address(
-		"1600 Pennsylvania Ave, Washington, DC" );
+                "1600 Pennsylvania Ave, Washington, DC" );
 
   $hashref = Geo::StreetAddress::US->parse_informal_address(
-		"Lot 3 Pennsylvania Ave" );
+                "Lot 3 Pennsylvania Ave" );
 
   $hashref = Geo::StreetAddress::US->parse_intersection(
-		"Mission Street at Valencia Street, San Francisco, CA" );
+                "Mission Street at Valencia Street, San Francisco, CA" );
 
   $hashref = Geo::StreetAddress::US->normalize_address( \%spec );
       # the parse_* methods call this automatically...
@@ -157,14 +157,14 @@ Maps directional abbreviations to directional names.
 =cut
 
 our %Directional = (
-    north	=> "N",
-    northeast	=> "NE",
-    east	=> "E",
-    southeast	=> "SE",
-    south	=> "S",
-    southwest	=> "SW",
-    west	=> "W",
-    northwest	=> "NW",
+    north       => "N",
+    northeast   => "NE",
+    east        => "E",
+    southeast   => "SE",
+    south       => "S",
+    southwest   => "SW",
+    west        => "W",
+    northwest   => "NW",
 );
 
 our %Direction_Code; # setup in init();
@@ -178,368 +178,368 @@ the distrbution for how this map was generated.
 =cut
 
 our %Street_Type = (
-    allee	=> "aly",
-    alley	=> "aly",
-    ally	=> "aly",
-    anex	=> "anx",
-    annex	=> "anx",
-    annx	=> "anx",
-    arcade	=> "arc",
-    av		=> "ave",
-    aven	=> "ave",
-    avenu	=> "ave",
-    avenue	=> "ave",
-    avn		=> "ave",
-    avnue	=> "ave",
-    bayoo	=> "byu",
-    bayou	=> "byu",
-    beach	=> "bch",
-    bend	=> "bnd",
-    bluf	=> "blf",
-    bluff	=> "blf",
-    bluffs	=> "blfs",
-    bot		=> "btm",
-    bottm	=> "btm",
-    bottom	=> "btm",
-    boul	=> "blvd",
-    boulevard	=> "blvd",
-    boulv	=> "blvd",
-    branch	=> "br",
-    brdge	=> "brg",
-    bridge	=> "brg",
-    brnch	=> "br",
-    brook	=> "brk",
-    brooks	=> "brks",
-    burg	=> "bg",
-    burgs	=> "bgs",
-    bypa	=> "byp",
-    bypas	=> "byp",
-    bypass	=> "byp",
-    byps	=> "byp",
-    camp	=> "cp",
-    canyn	=> "cyn",
-    canyon	=> "cyn",
-    cape	=> "cpe",
-    causeway	=> "cswy",
-    causway	=> "cswy",
-    cen		=> "ctr",
-    cent	=> "ctr",
-    center	=> "ctr",
-    centers	=> "ctrs",
-    centr	=> "ctr",
-    centre	=> "ctr",
-    circ	=> "cir",
-    circl	=> "cir",
-    circle	=> "cir",
-    circles	=> "cirs",
-    ck		=> "crk",
-    cliff	=> "clf",
-    cliffs	=> "clfs",
-    club	=> "clb",
-    cmp		=> "cp",
-    cnter	=> "ctr",
-    cntr	=> "ctr",
-    cnyn	=> "cyn",
-    common	=> "cmn",
-    corner	=> "cor",
-    corners	=> "cors",
-    course	=> "crse",
-    court	=> "ct",
-    courts	=> "cts",
-    cove	=> "cv",
-    coves	=> "cvs",
-    cr		=> "crk",
-    crcl	=> "cir",
-    crcle	=> "cir",
-    crecent	=> "cres",
-    creek	=> "crk",
-    crescent	=> "cres",
-    cresent	=> "cres",
-    crest	=> "crst",
-    crossing	=> "xing",
-    crossroad	=> "xrd",
-    crscnt	=> "cres",
-    crsent	=> "cres",
-    crsnt	=> "cres",
-    crssing	=> "xing",
-    crssng	=> "xing",
-    crt		=> "ct",
-    curve	=> "curv",
-    dale	=> "dl",
-    dam		=> "dm",
-    div		=> "dv",
-    divide	=> "dv",
-    driv	=> "dr",
-    drive	=> "dr",
-    drives	=> "drs",
-    drv		=> "dr",
-    dvd		=> "dv",
-    estate	=> "est",
-    estates	=> "ests",
-    exp		=> "expy",
-    expr	=> "expy",
-    express	=> "expy",
-    expressway	=> "expy",
-    expw	=> "expy",
-    extension	=> "ext",
-    extensions	=> "exts",
-    extn	=> "ext",
-    extnsn	=> "ext",
-    falls	=> "fls",
-    ferry	=> "fry",
-    field	=> "fld",
-    fields	=> "flds",
-    flat	=> "flt",
-    flats	=> "flts",
-    ford	=> "frd",
-    fords	=> "frds",
-    forest	=> "frst",
-    forests	=> "frst",
-    forg	=> "frg",
-    forge	=> "frg",
-    forges	=> "frgs",
-    fork	=> "frk",
-    forks	=> "frks",
-    fort	=> "ft",
-    freeway	=> "fwy",
-    freewy	=> "fwy",
-    frry	=> "fry",
-    frt		=> "ft",
-    frway	=> "fwy",
-    frwy	=> "fwy",
-    garden	=> "gdn",
-    gardens	=> "gdns",
-    gardn	=> "gdn",
-    gateway	=> "gtwy",
-    gatewy	=> "gtwy",
-    gatway	=> "gtwy",
-    glen	=> "gln",
-    glens	=> "glns",
-    grden	=> "gdn",
-    grdn	=> "gdn",
-    grdns	=> "gdns",
-    green	=> "grn",
-    greens	=> "grns",
-    grov	=> "grv",
-    grove	=> "grv",
-    groves	=> "grvs",
-    gtway	=> "gtwy",
-    harb	=> "hbr",
-    harbor	=> "hbr",
-    harbors	=> "hbrs",
-    harbr	=> "hbr",
-    haven	=> "hvn",
-    havn	=> "hvn",
-    height	=> "hts",
-    heights	=> "hts",
-    hgts	=> "hts",
-    highway	=> "hwy",
-    highwy	=> "hwy",
-    hill	=> "hl",
-    hills	=> "hls",
-    hiway	=> "hwy",
-    hiwy	=> "hwy",
-    hllw	=> "holw",
-    hollow	=> "holw",
-    hollows	=> "holw",
-    holws	=> "holw",
-    hrbor	=> "hbr",
-    ht		=> "hts",
-    hway	=> "hwy",
-    inlet	=> "inlt",
-    island	=> "is",
-    islands	=> "iss",
-    isles	=> "isle",
-    islnd	=> "is",
-    islnds	=> "iss",
-    jction	=> "jct",
-    jctn	=> "jct",
-    jctns	=> "jcts",
-    junction	=> "jct",
-    junctions	=> "jcts",
-    junctn	=> "jct",
-    juncton	=> "jct",
-    key		=> "ky",
-    keys	=> "kys",
-    knol	=> "knl",
-    knoll	=> "knl",
-    knolls	=> "knls",
-    la		=> "ln",
-    lake	=> "lk",
-    lakes	=> "lks",
-    landing	=> "lndg",
-    lane	=> "ln",
-    lanes	=> "ln",
-    ldge	=> "ldg",
-    light	=> "lgt",
-    lights	=> "lgts",
-    lndng	=> "lndg",
-    loaf	=> "lf",
-    lock	=> "lck",
-    locks	=> "lcks",
-    lodg	=> "ldg",
-    lodge	=> "ldg",
-    loops	=> "loop",
-    manor	=> "mnr",
-    manors	=> "mnrs",
-    meadow	=> "mdw",
-    meadows	=> "mdws",
-    medows	=> "mdws",
-    mill	=> "ml",
-    mills	=> "mls",
-    mission	=> "msn",
-    missn	=> "msn",
-    mnt		=> "mt",
-    mntain	=> "mtn",
-    mntn	=> "mtn",
-    mntns	=> "mtns",
-    motorway	=> "mtwy",
-    mount	=> "mt",
-    mountain	=> "mtn",
-    mountains	=> "mtns",
-    mountin	=> "mtn",
-    mssn	=> "msn",
-    mtin	=> "mtn",
-    neck	=> "nck",
-    orchard	=> "orch",
-    orchrd	=> "orch",
-    overpass	=> "opas",
-    ovl		=> "oval",
-    parks	=> "park",
-    parkway	=> "pkwy",
-    parkways	=> "pkwy",
-    parkwy	=> "pkwy",
-    passage	=> "psge",
-    paths	=> "path",
-    pikes	=> "pike",
-    pine	=> "pne",
-    pines	=> "pnes",
-    pk		=> "park",
-    pkway	=> "pkwy",
-    pkwys	=> "pkwy",
-    pky		=> "pkwy",
-    place	=> "pl",
-    plain	=> "pln",
-    plaines	=> "plns",
-    plains	=> "plns",
-    plaza	=> "plz",
-    plza	=> "plz",
-    point	=> "pt",
-    points	=> "pts",
-    port	=> "prt",
-    ports	=> "prts",
-    prairie	=> "pr",
-    prarie	=> "pr",
-    prk		=> "park",
-    prr		=> "pr",
-    rad		=> "radl",
-    radial	=> "radl",
-    radiel	=> "radl",
-    ranch	=> "rnch",
-    ranches	=> "rnch",
-    rapid	=> "rpd",
-    rapids	=> "rpds",
-    rdge	=> "rdg",
-    rest	=> "rst",
-    ridge	=> "rdg",
-    ridges	=> "rdgs",
-    river	=> "riv",
-    rivr	=> "riv",
-    rnchs	=> "rnch",
-    road	=> "rd",
-    roads	=> "rds",
-    route	=> "rte",
-    rvr		=> "riv",
-    shoal	=> "shl",
-    shoals	=> "shls",
-    shoar	=> "shr",
-    shoars	=> "shrs",
-    shore	=> "shr",
-    shores	=> "shrs",
-    skyway	=> "skwy",
-    spng	=> "spg",
-    spngs	=> "spgs",
-    spring	=> "spg",
-    springs	=> "spgs",
-    sprng	=> "spg",
-    sprngs	=> "spgs",
-    spurs	=> "spur",
-    sqr		=> "sq",
-    sqre	=> "sq",
-    sqrs	=> "sqs",
-    squ		=> "sq",
-    square	=> "sq",
-    squares	=> "sqs",
-    station	=> "sta",
-    statn	=> "sta",
-    stn		=> "sta",
-    str		=> "st",
-    strav	=> "stra",
-    strave	=> "stra",
-    straven	=> "stra",
-    stravenue	=> "stra",
-    stravn	=> "stra",
-    stream	=> "strm",
-    street	=> "st",
-    streets	=> "sts",
-    streme	=> "strm",
-    strt	=> "st",
-    strvn	=> "stra",
-    strvnue	=> "stra",
-    sumit	=> "smt",
-    sumitt	=> "smt",
-    summit	=> "smt",
-    terr	=> "ter",
-    terrace	=> "ter",
-    throughway	=> "trwy",
-    tpk		=> "tpke",
-    tr		=> "trl",
-    trace	=> "trce",
-    traces	=> "trce",
-    track	=> "trak",
-    tracks	=> "trak",
-    trafficway	=> "trfy",
-    trail	=> "trl",
-    trails	=> "trl",
-    trk		=> "trak",
-    trks	=> "trak",
-    trls	=> "trl",
-    trnpk	=> "tpke",
-    trpk	=> "tpke",
-    tunel	=> "tunl",
-    tunls	=> "tunl",
-    tunnel	=> "tunl",
-    tunnels	=> "tunl",
-    tunnl	=> "tunl",
-    turnpike	=> "tpke",
-    turnpk	=> "tpke",
-    underpass	=> "upas",
-    union	=> "un",
-    unions	=> "uns",
-    valley	=> "vly",
-    valleys	=> "vlys",
-    vally	=> "vly",
-    vdct	=> "via",
-    viadct	=> "via",
-    viaduct	=> "via",
-    view	=> "vw",
-    views	=> "vws",
-    vill	=> "vlg",
-    villag	=> "vlg",
-    village	=> "vlg",
-    villages	=> "vlgs",
-    ville	=> "vl",
-    villg	=> "vlg",
-    villiage	=> "vlg",
-    vist	=> "vis",
-    vista	=> "vis",
-    vlly	=> "vly",
-    vst		=> "vis",
-    vsta	=> "vis",
-    walks	=> "walk",
-    well	=> "wl",
-    wells	=> "wls",
-    wy		=> "way",
+    allee       => "aly",
+    alley       => "aly",
+    ally        => "aly",
+    anex        => "anx",
+    annex       => "anx",
+    annx        => "anx",
+    arcade      => "arc",
+    av          => "ave",
+    aven        => "ave",
+    avenu       => "ave",
+    avenue      => "ave",
+    avn         => "ave",
+    avnue       => "ave",
+    bayoo       => "byu",
+    bayou       => "byu",
+    beach       => "bch",
+    bend        => "bnd",
+    bluf        => "blf",
+    bluff       => "blf",
+    bluffs      => "blfs",
+    bot         => "btm",
+    bottm       => "btm",
+    bottom      => "btm",
+    boul        => "blvd",
+    boulevard   => "blvd",
+    boulv       => "blvd",
+    branch      => "br",
+    brdge       => "brg",
+    bridge      => "brg",
+    brnch       => "br",
+    brook       => "brk",
+    brooks      => "brks",
+    burg        => "bg",
+    burgs       => "bgs",
+    bypa        => "byp",
+    bypas       => "byp",
+    bypass      => "byp",
+    byps        => "byp",
+    camp        => "cp",
+    canyn       => "cyn",
+    canyon      => "cyn",
+    cape        => "cpe",
+    causeway    => "cswy",
+    causway     => "cswy",
+    cen         => "ctr",
+    cent        => "ctr",
+    center      => "ctr",
+    centers     => "ctrs",
+    centr       => "ctr",
+    centre      => "ctr",
+    circ        => "cir",
+    circl       => "cir",
+    circle      => "cir",
+    circles     => "cirs",
+    ck          => "crk",
+    cliff       => "clf",
+    cliffs      => "clfs",
+    club        => "clb",
+    cmp         => "cp",
+    cnter       => "ctr",
+    cntr        => "ctr",
+    cnyn        => "cyn",
+    common      => "cmn",
+    corner      => "cor",
+    corners     => "cors",
+    course      => "crse",
+    court       => "ct",
+    courts      => "cts",
+    cove        => "cv",
+    coves       => "cvs",
+    cr          => "crk",
+    crcl        => "cir",
+    crcle       => "cir",
+    crecent     => "cres",
+    creek       => "crk",
+    crescent    => "cres",
+    cresent     => "cres",
+    crest       => "crst",
+    crossing    => "xing",
+    crossroad   => "xrd",
+    crscnt      => "cres",
+    crsent      => "cres",
+    crsnt       => "cres",
+    crssing     => "xing",
+    crssng      => "xing",
+    crt         => "ct",
+    curve       => "curv",
+    dale        => "dl",
+    dam         => "dm",
+    div         => "dv",
+    divide      => "dv",
+    driv        => "dr",
+    drive       => "dr",
+    drives      => "drs",
+    drv         => "dr",
+    dvd         => "dv",
+    estate      => "est",
+    estates     => "ests",
+    exp         => "expy",
+    expr        => "expy",
+    express     => "expy",
+    expressway  => "expy",
+    expw        => "expy",
+    extension   => "ext",
+    extensions  => "exts",
+    extn        => "ext",
+    extnsn      => "ext",
+    falls       => "fls",
+    ferry       => "fry",
+    field       => "fld",
+    fields      => "flds",
+    flat        => "flt",
+    flats       => "flts",
+    ford        => "frd",
+    fords       => "frds",
+    forest      => "frst",
+    forests     => "frst",
+    forg        => "frg",
+    forge       => "frg",
+    forges      => "frgs",
+    fork        => "frk",
+    forks       => "frks",
+    fort        => "ft",
+    freeway     => "fwy",
+    freewy      => "fwy",
+    frry        => "fry",
+    frt         => "ft",
+    frway       => "fwy",
+    frwy        => "fwy",
+    garden      => "gdn",
+    gardens     => "gdns",
+    gardn       => "gdn",
+    gateway     => "gtwy",
+    gatewy      => "gtwy",
+    gatway      => "gtwy",
+    glen        => "gln",
+    glens       => "glns",
+    grden       => "gdn",
+    grdn        => "gdn",
+    grdns       => "gdns",
+    green       => "grn",
+    greens      => "grns",
+    grov        => "grv",
+    grove       => "grv",
+    groves      => "grvs",
+    gtway       => "gtwy",
+    harb        => "hbr",
+    harbor      => "hbr",
+    harbors     => "hbrs",
+    harbr       => "hbr",
+    haven       => "hvn",
+    havn        => "hvn",
+    height      => "hts",
+    heights     => "hts",
+    hgts        => "hts",
+    highway     => "hwy",
+    highwy      => "hwy",
+    hill        => "hl",
+    hills       => "hls",
+    hiway       => "hwy",
+    hiwy        => "hwy",
+    hllw        => "holw",
+    hollow      => "holw",
+    hollows     => "holw",
+    holws       => "holw",
+    hrbor       => "hbr",
+    ht          => "hts",
+    hway        => "hwy",
+    inlet       => "inlt",
+    island      => "is",
+    islands     => "iss",
+    isles       => "isle",
+    islnd       => "is",
+    islnds      => "iss",
+    jction      => "jct",
+    jctn        => "jct",
+    jctns       => "jcts",
+    junction    => "jct",
+    junctions   => "jcts",
+    junctn      => "jct",
+    juncton     => "jct",
+    key         => "ky",
+    keys        => "kys",
+    knol        => "knl",
+    knoll       => "knl",
+    knolls      => "knls",
+    la          => "ln",
+    lake        => "lk",
+    lakes       => "lks",
+    landing     => "lndg",
+    lane        => "ln",
+    lanes       => "ln",
+    ldge        => "ldg",
+    light       => "lgt",
+    lights      => "lgts",
+    lndng       => "lndg",
+    loaf        => "lf",
+    lock        => "lck",
+    locks       => "lcks",
+    lodg        => "ldg",
+    lodge       => "ldg",
+    loops       => "loop",
+    manor       => "mnr",
+    manors      => "mnrs",
+    meadow      => "mdw",
+    meadows     => "mdws",
+    medows      => "mdws",
+    mill        => "ml",
+    mills       => "mls",
+    mission     => "msn",
+    missn       => "msn",
+    mnt         => "mt",
+    mntain      => "mtn",
+    mntn        => "mtn",
+    mntns       => "mtns",
+    motorway    => "mtwy",
+    mount       => "mt",
+    mountain    => "mtn",
+    mountains   => "mtns",
+    mountin     => "mtn",
+    mssn        => "msn",
+    mtin        => "mtn",
+    neck        => "nck",
+    orchard     => "orch",
+    orchrd      => "orch",
+    overpass    => "opas",
+    ovl         => "oval",
+    parks       => "park",
+    parkway     => "pkwy",
+    parkways    => "pkwy",
+    parkwy      => "pkwy",
+    passage     => "psge",
+    paths       => "path",
+    pikes       => "pike",
+    pine        => "pne",
+    pines       => "pnes",
+    pk          => "park",
+    pkway       => "pkwy",
+    pkwys       => "pkwy",
+    pky         => "pkwy",
+    place       => "pl",
+    plain       => "pln",
+    plaines     => "plns",
+    plains      => "plns",
+    plaza       => "plz",
+    plza        => "plz",
+    point       => "pt",
+    points      => "pts",
+    port        => "prt",
+    ports       => "prts",
+    prairie     => "pr",
+    prarie      => "pr",
+    prk         => "park",
+    prr         => "pr",
+    rad         => "radl",
+    radial      => "radl",
+    radiel      => "radl",
+    ranch       => "rnch",
+    ranches     => "rnch",
+    rapid       => "rpd",
+    rapids      => "rpds",
+    rdge        => "rdg",
+    rest        => "rst",
+    ridge       => "rdg",
+    ridges      => "rdgs",
+    river       => "riv",
+    rivr        => "riv",
+    rnchs       => "rnch",
+    road        => "rd",
+    roads       => "rds",
+    route       => "rte",
+    rvr         => "riv",
+    shoal       => "shl",
+    shoals      => "shls",
+    shoar       => "shr",
+    shoars      => "shrs",
+    shore       => "shr",
+    shores      => "shrs",
+    skyway      => "skwy",
+    spng        => "spg",
+    spngs       => "spgs",
+    spring      => "spg",
+    springs     => "spgs",
+    sprng       => "spg",
+    sprngs      => "spgs",
+    spurs       => "spur",
+    sqr         => "sq",
+    sqre        => "sq",
+    sqrs        => "sqs",
+    squ         => "sq",
+    square      => "sq",
+    squares     => "sqs",
+    station     => "sta",
+    statn       => "sta",
+    stn         => "sta",
+    str         => "st",
+    strav       => "stra",
+    strave      => "stra",
+    straven     => "stra",
+    stravenue   => "stra",
+    stravn      => "stra",
+    stream      => "strm",
+    street      => "st",
+    streets     => "sts",
+    streme      => "strm",
+    strt        => "st",
+    strvn       => "stra",
+    strvnue     => "stra",
+    sumit       => "smt",
+    sumitt      => "smt",
+    summit      => "smt",
+    terr        => "ter",
+    terrace     => "ter",
+    throughway  => "trwy",
+    tpk         => "tpke",
+    tr          => "trl",
+    trace       => "trce",
+    traces      => "trce",
+    track       => "trak",
+    tracks      => "trak",
+    trafficway  => "trfy",
+    trail       => "trl",
+    trails      => "trl",
+    trk         => "trak",
+    trks        => "trak",
+    trls        => "trl",
+    trnpk       => "tpke",
+    trpk        => "tpke",
+    tunel       => "tunl",
+    tunls       => "tunl",
+    tunnel      => "tunl",
+    tunnels     => "tunl",
+    tunnl       => "tunl",
+    turnpike    => "tpke",
+    turnpk      => "tpke",
+    underpass   => "upas",
+    union       => "un",
+    unions      => "uns",
+    valley      => "vly",
+    valleys     => "vlys",
+    vally       => "vly",
+    vdct        => "via",
+    viadct      => "via",
+    viaduct     => "via",
+    view        => "vw",
+    views       => "vws",
+    vill        => "vlg",
+    villag      => "vlg",
+    village     => "vlg",
+    villages    => "vlgs",
+    ville       => "vl",
+    villg       => "vlg",
+    villiage    => "vlg",
+    vist        => "vis",
+    vista       => "vis",
+    vlly        => "vly",
+    vst         => "vis",
+    vsta        => "vis",
+    walks       => "walk",
+    well        => "wl",
+    wells       => "wls",
+    wy          => "way",
 );
 
 our %_Street_Type_List;     # set up in init() later;
@@ -771,21 +771,20 @@ sub init {
         type    => join("|", keys %_Street_Type_List),
         fraction => qr{\d+\/\d+},
         state   => '\b(?:'.join("|",
-   		    # escape spaces in state names (e.g., "new york" --> "new\\ york")
-	        # so they still match in the x environment below
+            # escape spaces in state names (e.g., "new york" --> "new\\ york")
+            # so they still match in the x environment below
             map { ( quotemeta $_) } keys %State_Code, values %State_Code
             ).')\b',
         direct  => join("|",
-			    # map direction names to direction codes
-                        keys %Directional,
-			    # also map the dotted version of the code to the code itself
-                        map { my $c = $_;
-                              $c =~ s/(\w)/$1./g;
-                              ( quotemeta $c, $_ ) }
-                        sort { length $b <=> length $a }
-                        values %Directional),
+            # map direction names to direction codes
+            keys %Directional,
+            # also map the dotted version of the code to the code itself
+            map {
+                my $c = $_; $c =~ s/(\w)/$1./g; ( quotemeta $c, $_ )
+            } sort { length $b <=> length $a } values %Directional
+        ),
         dircode => join("|", keys %Direction_Code),
-        zip	    => qr/\d{5}(?:-?\d{4})?/,  # XXX add \b?
+        zip     => qr/\d{5}(?:-?\d{4})?/,  # XXX add \b?
         corner  => qr/(?:\band\b|\bat\b|&|\@)/i,
     );
 
@@ -803,24 +802,24 @@ sub init {
              ($Addr_Match{type})\b              (?{ $_{type}   = $^N }))
              #(?{ $_{_street}.=1 })
           |
-          (?:($Addr_Match{direct})\W+		(?{ $_{prefix} = $^N }))?
+          (?:($Addr_Match{direct})\W+           (?{ $_{prefix} = $^N }))?
           (?:
-            ([^,]*\d)				(?{ $_{street} = $^N })
-            (?:[^\w,]*($Addr_Match{direct})\b	(?{ $_{suffix} = $^N; $_{type}||='' }))
+            ([^,]*\d)                           (?{ $_{street} = $^N })
+            (?:[^\w,]*($Addr_Match{direct})\b   (?{ $_{suffix} = $^N; $_{type}||='' }))
             #(?{ $_{_street}.=3 })
            |
-            ([^,]+)				(?{ $_{street} = $^N })
-            (?:[^\w,]+($Addr_Match{type})\b	(?{ $_{type}   = $^N }))
-            (?:[^\w,]+($Addr_Match{direct})\b	(?{ $_{suffix} = $^N }))?
+            ([^,]+)                             (?{ $_{street} = $^N })
+            (?:[^\w,]+($Addr_Match{type})\b     (?{ $_{type}   = $^N }))
+            (?:[^\w,]+($Addr_Match{direct})\b   (?{ $_{suffix} = $^N }))?
             #(?{ $_{_street}.=2 })
            |
-            ([^,]+?)				(?{ $_{street} = $^N; $_{type}||='' })
-            (?:[^\w,]+($Addr_Match{type})\b	(?{ $_{type}   = $^N }))?
-            (?:[^\w,]+($Addr_Match{direct})\b	(?{ $_{suffix} = $^N }))?
+            ([^,]+?)                            (?{ $_{street} = $^N; $_{type}||='' })
+            (?:[^\w,]+($Addr_Match{type})\b     (?{ $_{type}   = $^N }))?
+            (?:[^\w,]+($Addr_Match{direct})\b   (?{ $_{suffix} = $^N }))?
             #(?{ $_{_street}.=4 })
           )
         )
-	/ix;
+    /ix;
 
 
     # http://pe.usps.com/text/pub28/pub28c2_003.htm
@@ -841,7 +840,7 @@ sub init {
             |spa?ce?
             |stop
             |tra?i?le?r
-            |box)(?![a-z])			(?{ $_{sec_unit_type}   = $^N })
+            |box)(?![a-z])            (?{ $_{sec_unit_type}   = $^N })
         /ix;
 
     $Addr_Match{sec_unit_type_unnumbered} = qr/
@@ -854,41 +853,41 @@ sub init {
             |rear
             |side
             |uppe?r
-            )\b			        	(?{ $_{sec_unit_type}   = $^N })
+            )\b                      (?{ $_{sec_unit_type}   = $^N })
         /ix;
 
     $Addr_Match{sec_unit} = qr/
         (:?
             (?: (?:$Addr_Match{sec_unit_type_numbered} \W*)
-                | (\#)\W*                       (?{ $_{sec_unit_type}   = $^N })
+                | (\#)\W*            (?{ $_{sec_unit_type}   = $^N })
             )
-            (  [\w-]+)				(?{ $_{sec_unit_num}    = $^N })
+            (  [\w-]+)               (?{ $_{sec_unit_num}    = $^N })
         )
         |
             $Addr_Match{sec_unit_type_unnumbered}
         /ix;
 
     $Addr_Match{city_and_state} = qr/
-	(?:
-	    ([^\d,]+?)\W+			(?{ $_{city}   = $^N })
-	    ($Addr_Match{state})		(?{ $_{state}  = $^N })
-	)
-	/ix;
+        (?:
+            ([^\d,]+?)\W+            (?{ $_{city}   = $^N })
+            ($Addr_Match{state})     (?{ $_{state}  = $^N })
+        )
+        /ix;
 
     $Addr_Match{place} = qr/
-	(?:$Addr_Match{city_and_state}\W*)?
-	(?:($Addr_Match{zip})			(?{ $_{zip}    = $^N }))?
-	/ix;
+        (?:$Addr_Match{city_and_state}\W*)?
+        (?:($Addr_Match{zip})        (?{ $_{zip}    = $^N }))?
+        /ix;
 
     $Addr_Match{address} = qr/
         ^
         [^\w\#]*    # skip non-word chars except # (eg unit)
-	(  $Addr_Match{number} )\W*
+        (  $Addr_Match{number} )\W*
         (?:$Addr_Match{fraction}\W*)?
-	   $Addr_Match{street}\W+
-	(?:$Addr_Match{sec_unit}\W+)?
-	   $Addr_Match{place}
-	\W*         # require on non-word chars at end
+           $Addr_Match{street}\W+
+        (?:$Addr_Match{sec_unit}\W+)?
+           $Addr_Match{place}
+        \W*         # require on non-word chars at end
         $           # right up to end of string
         /ix;
 
@@ -907,16 +906,16 @@ sub init {
         /ix;
 
     $Addr_Match{intersection} = qr/^\W*
-	   $Addr_Match{street}\W*?	
+           $Addr_Match{street}\W*?
 
-	\s+$Addr_Match{corner}\s+
+        \s+$Addr_Match{corner}\s+
 
-	    (?{ exists $_{$_} and $_{$_.1} = delete $_{$_} for (qw{prefix street type suffix})})
-	   $Addr_Match{street}\W+
-	    (?{ exists $_{$_} and $_{$_.2} = delete $_{$_} for (qw{prefix street type suffix})})
+            (?{ exists $_{$_} and $_{$_.1} = delete $_{$_} for (qw{prefix street type suffix})})
+           $Addr_Match{street}\W+
+            (?{ exists $_{$_} and $_{$_.2} = delete $_{$_} for (qw{prefix street type suffix})})
 
-	   $Addr_Match{place}
-	\W*$/ix;
+           $Addr_Match{place}
+        \W*$/ix;
 }
 
 =head2 parse_location
@@ -934,7 +933,7 @@ sub parse_location {
     my ($class, $addr) = @_;
 
     if ($addr =~ /$Addr_Match{corner}/ios) {
-	return $class->parse_intersection($addr);
+        return $class->parse_intersection($addr);
     }
     return $class->parse_address($addr)
         || $class->parse_informal_address($addr);
@@ -1051,13 +1050,13 @@ sub normalize_address {
     defined($_) && s/^\s+|\s+$|[^\w\s\-\#\&]//gos for values %$part;
 
     while (my ($key, $map) = each %Normalize_Map) {
-	$part->{$key} = $map->{lc $part->{$key}}
+        $part->{$key} = $map->{lc $part->{$key}}
               if  exists $part->{$key}
-	      and exists $map->{lc $part->{$key}};
+              and exists $map->{lc $part->{$key}};
     }
 
     $part->{$_} = ucfirst lc $part->{$_}
-	for grep(exists $part->{$_}, qw( type type1 type2 ));
+        for grep(exists $part->{$_}, qw( type type1 type2 ));
 
     if ($class->avoid_redundant_street_type) {
         for my $suffix ('', '1', '2') {
@@ -1072,8 +1071,8 @@ sub normalize_address {
 
     # attempt to expand directional prefixes on place names
     $part->{city} =~ s/^($Addr_Match{dircode})\s+(?=\S)
-		      /\u$Direction_Code{uc $1} /iosx
-		      if $part->{city};
+                      /\u$Direction_Code{uc $1} /iosx
+                      if $part->{city};
 
     # strip ZIP+4 (which may be missing a hyphen)
     $part->{zip} =~ s/^(.{5}).*/$1/os if $part->{zip};
@@ -1142,3 +1141,4 @@ it under the same terms as Perl itself, either Perl version 5.8.4 or,
 at your option, any later version of Perl 5 you may have available.
 
 =cut
+# vim: ts=8:sw=4:et
