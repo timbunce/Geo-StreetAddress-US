@@ -48,8 +48,8 @@ my %address = (
           'city' => 'Sebastopol',
           'type' => 'Hwy',
           'prefix' => 'N',
-              'sec_unit_type' => 'Suite',
-              'sec_unit_num' => '500',
+          'sec_unit_type' => 'Suite',
+          'sec_unit_num' => '500',
         },
     "1005 N Gravenstein Hwy Suite 500 Sebastopol, CA" => {
           'number' => '1005',
@@ -58,8 +58,8 @@ my %address = (
           'city' => 'Sebastopol',
           'type' => 'Hwy',
           'prefix' => 'N',
-              'sec_unit_type' => 'Suite',
-              'sec_unit_num' => '500',
+          'sec_unit_type' => 'Suite',
+          'sec_unit_num' => '500',
         },
     "1005 N Gravenstein Highway, Sebastopol, CA, 95472" => {
           'number' => '1005',
@@ -350,14 +350,16 @@ my %address = (
           'type' => 'Rd',
           'state' => 'CO'
         },
-);
+    "1234 COUNTY HWY 60E, Town, CO 12345" => {
+        'city' => 'Town',
+        'zip' => '12345',
+        'number' => '1234',
+        'street' => 'COUNTY HWY 60',
+        'suffix' => 'E',
+        'type' => '',  # ?
+        'state' => 'CO'
+        },
 
-my @failures = (
-    "1005 N Gravenstein Hwy Sebastopol",
-    "1005 N Gravenstein Hwy Sebastopol CZ",
-    "Gravenstein Hwy 95472",
-    "E1005 Gravenstein Hwy 95472",
-    "1005E Gravenstein Hwy 95472",
 );
 
 
@@ -367,10 +369,43 @@ while (my ($addr, $expected) = each %address) {
         or warn "Got: ".Dumper($parse);
 }
 
+
+my @failures = (
+    "1005 N Gravenstein Hwy Sebastopol",
+    "1005 N Gravenstein Hwy Sebastopol CZ",
+    "Gravenstein Hwy 95472",
+    "E1005 Gravenstein Hwy 95472",
+    "1005E Gravenstein Hwy 95472",
+);
+
 for my $fail (@failures) {
     my $parse = Geo::StreetAddress::US->parse_location( $fail );
     ok( !$parse || !defined($parse->{state}), "can't parse $fail" );
 }
+
+ok not Geo::StreetAddress::US->avoid_redundant_street_type;
+Geo::StreetAddress::US->avoid_redundant_street_type(1);
+ok Geo::StreetAddress::US->avoid_redundant_street_type;
+
+is_deeply Geo::StreetAddress::US->parse_location("36401 County Road 43, Eaton, CO 80615"), {
+    'city' => 'Eaton',
+    'zip' => '80615',
+    'number' => '36401',
+    'street' => 'County Road 43',
+    'type' => undef,  #
+    'state' => 'CO'
+}, 'type should be undef for Country Road 43 with avoid_redundant_street_type';
+
+# XXX TODO: a suffix like "COUNTY HWY 60E" breaks this logic
+# but not very badly, suffix='E', street='COUNTY HWY 60' and type='' (not undef)
+is_deeply Geo::StreetAddress::US->parse_location("1234 COUNTY HWY 60, Town, CO 12345"), {
+    'city' => 'Town',
+    'zip' => '12345',
+    'number' => '1234',
+    'street' => 'COUNTY HWY 60',
+    'type' => undef,
+    'state' => 'CO'
+}, 'type should be undef for COUNTY HWY 60 with avoid_redundant_street_type';
 
 done_testing();
 
