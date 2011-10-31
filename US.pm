@@ -1,5 +1,13 @@
 package Geo::StreetAddress::US;
 
+use 5.008_001;
+use strict;
+use warnings;
+
+our $VERSION = '1.03';
+
+use base 'Class::Data::Inheritable';
+
 =head1 NAME
 
 Geo::StreetAddress::US - Perl extension for parsing US street addresses
@@ -128,14 +136,6 @@ State abbreviation, as above.
 Five digit ZIP code, as above.
 
 =cut
-
-use 5.008_001;
-use strict;
-use warnings;
-
-our $VERSION = '1.02';
-
-use base 'Class::Data::Inheritable';
 
 =head1 GLOBAL VARIABLES
 
@@ -724,10 +724,10 @@ For example, given "4321 Country Road 7", C<street> will be "Country Road 7"
 and C<type> will be "Rd". With avoid_redundant_street_type set true, C<type>
 will be undef because C<street> matches /\b (rd|road) \b/ix;
 
-Also applies to the C<type1> (for C<street1>) and C<type2> (for C<street2>)
+Also applies to C<type1> for C<street1> and C<type2> for C<street2>
 fields for intersections.
 
-The default is false for backwards compatibility.
+The default is false, for backwards compatibility.
 
 =cut
 
