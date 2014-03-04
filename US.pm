@@ -1051,7 +1051,7 @@ sub normalize_address {
 
     while (my ($key, $map) = each %Normalize_Map) {
         $part->{$key} = $map->{lc $part->{$key}}
-              if  exists $part->{$key}
+              if  defined $part->{$key}
               and exists $map->{lc $part->{$key}};
     }
 
