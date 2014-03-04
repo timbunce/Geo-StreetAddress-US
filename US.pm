@@ -792,7 +792,7 @@ sub init {
     # treat "42S" as "42 S" (42 South). For example,
     # Utah and Wisconsin have a more elaborate system of block numbering
     # http://en.wikipedia.org/wiki/House_number#Block_numbers
-    $Addr_Match{number} = qr/(\d+-?\d*) (?{ $_{number} = $^N })/ix,
+    $Addr_Match{number} = qr/(\d+-?\d*)(?=\D) (?{ $_{number} = $^N })/ix,
 
     # note that expressions like [^,]+ may scan more than you expect
     $Addr_Match{street} = qr/

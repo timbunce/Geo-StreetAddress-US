@@ -360,6 +360,13 @@ my %address = (
         'state' => 'CO'
         },
 
+    "321 S. Washington" => {
+          'type' => '',
+          'prefix' => 'S',
+          'street' => 'Washington',
+          'number' => '321'
+        },
+
 );
 
 
