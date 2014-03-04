@@ -4,7 +4,7 @@ use 5.008_001;
 use strict;
 use warnings;
 
-our $VERSION = '1.03';
+our $VERSION = '1.04';
 
 use base 'Class::Data::Inheritable';
 
@@ -879,9 +879,11 @@ sub init {
         (?:($Addr_Match{zip})        (?{ $_{zip}    = $^N }))?
         /ix;
 
+    # the \x23 below is an alias for '#' to avoid a bug in perl 5.18.1
+    # https://rt.cpan.org/Ticket/Display.html?id=91420
     $Addr_Match{address} = qr/
         ^
-        [^\w\#]*    # skip non-word chars except # (eg unit)
+        [^\w\x23]*    # skip non-word chars except # (eg unit)
         (  $Addr_Match{number} )\W*
         (?:$Addr_Match{fraction}\W*)?
            $Addr_Match{street}\W+

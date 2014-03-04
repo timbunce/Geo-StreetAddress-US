@@ -5,6 +5,7 @@ Revision history for Perl extension Geo::StreetAddress::US.
     Avoid undef warning in some cases. RT#82146
     Force number to end on non-digit to improve parsing for some edge-cases.
     Added test case for RT#73397.
+    Workaround a regex bug in perl 5.18.{1,2} RT#91420
 
 1.03
 
