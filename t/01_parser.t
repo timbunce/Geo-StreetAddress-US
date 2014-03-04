@@ -360,11 +360,19 @@ my %address = (
         'state' => 'CO'
         },
 
-    "321 S. Washington" => {
+    "321 S. Washington" => { # RT#82146
           'type' => '',
           'prefix' => 'S',
           'street' => 'Washington',
           'number' => '321'
+        },
+
+    "'45 Quaker Ave, Ste 105'" => { # RT#73397
+          'number' => '45',
+          'street' => 'Quaker',
+          'type' => 'Ave',
+          'sec_unit_num' => '105',
+          'sec_unit_type' => 'Ste'
         },
 
 );
