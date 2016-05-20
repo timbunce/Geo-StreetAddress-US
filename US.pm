@@ -75,7 +75,7 @@ Name of the street, without directional or type qualifiers.
 =head2 type
 
 Abbreviated street type, e.g. Rd, St, Ave, etc. See the USPS official
-type abbreviations at L<http://pe.usps.com/text/pub28/pub28apc.html>
+type abbreviations at L<http://pe.usps.com/text/pub28/28apc_002.htm>
 for a list of abbreviations used.
 
 =head2 suffix
