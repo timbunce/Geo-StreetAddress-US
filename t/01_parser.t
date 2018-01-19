@@ -1,8 +1,8 @@
 use blib;
-use Test::More;
 use strict;
 use warnings;
-use Data::Dumper;
+use Data::Dumper qw( Dumper );
+use Test::More;
 
 use_ok( "Geo::StreetAddress::US" );
 
