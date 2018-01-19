@@ -89,7 +89,7 @@ Name of the city, town, or other locale that the address is situated in.
 =head2 state
 
 The state which the address is situated in, given as its two-letter
-postal abbreviation.  for a list of abbreviations used.
+postal abbreviation.
 
 =head2 zip
 
@@ -98,11 +98,11 @@ Five digit ZIP postal code for the address, including leading zero, if needed.
 =head2 sec_unit_type
 
 If the address includes a Secondary Unit Designator, such as a room, suite or
-appartment, the C<sec_unit_type> field will indicate the type of unit.
+apartment, the C<sec_unit_type> field will indicate the type of unit.
 
 =head2 sec_unit_num
 
-If the address includes a Secondary Unit Designator, such as a room, suite or appartment,
+If the address includes a Secondary Unit Designator, such as a room, suite or apartment,
 the C<sec_unit_num> field will indicate the number of the unit (which may not be numeric).
 
 =head1 INTERSECTION SPECIFIER
@@ -173,7 +173,7 @@ our %Direction_Code; # setup in init();
 
 Maps lowercased USPS standard street types to their canonical postal
 abbreviations as found in TIGER/Line.  See eg/get_street_abbrev.pl in
-the distrbution for how this map was generated.
+the distribution for how this map was generated.
 
 =cut
 
@@ -548,7 +548,7 @@ our %_Street_Type_Match;    # set up in init() later;
 =head2 %State_Code
 
 Maps lowercased US state and territory names to their canonical two-letter
-postal abbreviations. See eg/get_state_abbrev.pl in the distrbution
+postal abbreviations. See eg/get_state_abbrev.pl in the distribution
 for how this map was generated.
 
 =cut
