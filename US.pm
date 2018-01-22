@@ -795,6 +795,9 @@ sub init {
     $Addr_Match{number} = qr/(\d+-?\d*)(?=\D) (?{ $_{number} = $^N })/ix,
 
     # note that expressions like [^,]+ may scan more than you expect
+    #
+    # The commented out $_{_street} concatenation is to help debug which
+    # branches we take in this regex.
     $Addr_Match{street} = qr/
         (?:
           # special case for addresses like 100 South Street
