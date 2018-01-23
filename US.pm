@@ -934,7 +934,7 @@ returns false then parse_informal_address() is called.
 sub parse_location {
     my ($class, $addr) = @_;
 
-    if ($addr =~ /$Addr_Match{corner}/ios) {
+    if ($addr =~ /$Addr_Match{corner}/is) {
         return $class->parse_intersection($addr);
     }
     return $class->parse_address($addr)
@@ -958,7 +958,7 @@ sub parse_address {
     my ($class, $addr) = @_;
     local %_;
 
-    $addr =~ /$Addr_Match{address}/ios
+    $addr =~ /$Addr_Match{address}/is
         or return undef;
 
     return $class->normalize_address({ %_ });
@@ -984,7 +984,7 @@ sub parse_informal_address {
     my ($class, $addr) = @_;
     local %_;
 
-    $addr =~ /$Addr_Match{informal_address}/ios
+    $addr =~ /$Addr_Match{informal_address}/is
         or return undef;
 
     return $class->normalize_address({ %_ });
@@ -1005,7 +1005,7 @@ sub parse_intersection {
     my ($class, $addr) = @_;
     local %_;
 
-    $addr =~ /$Addr_Match{intersection}/ios
+    $addr =~ /$Addr_Match{intersection}/is
         or return undef;
 
     my %part = %_;
@@ -1015,7 +1015,7 @@ sub parse_intersection {
     # So "X & Y Streets" becomes "X Street" and "Y Street".
     if ($part{type2} && (!$part{type1} or $part{type1} eq $part{type2})) {
         my $type = $part{type2};
-        if ($type =~ s/s\W*$//ios and $type =~ /^$Addr_Match{type}$/ios) {
+        if ($type =~ s/s\W*$//is and $type =~ /^$Addr_Match{type}$/is) {
             $part{type1} = $part{type2} = $type;
         }
     }
@@ -1049,7 +1049,7 @@ sub normalize_address {
     #m/^_/ and delete $part->{$_} for keys %$part; # for debug
 
     # strip off some punctuation
-    defined($_) && s/^\s+|\s+$|[^\w\s\-\#\&]//gos for values %$part;
+    defined($_) && s/^\s+|\s+$|[^\w\s\-\#\&]//gs for values %$part;
 
     while (my ($key, $map) = each %Normalize_Map) {
         $part->{$key} = $map->{lc $part->{$key}}
@@ -1073,11 +1073,11 @@ sub normalize_address {
 
     # attempt to expand directional prefixes on place names
     $part->{city} =~ s/^($Addr_Match{dircode})\s+(?=\S)
-                      /\u$Direction_Code{uc $1} /iosx
+                      /\u$Direction_Code{uc $1} /isx
                       if $part->{city};
 
     # strip ZIP+4 (which may be missing a hyphen)
-    $part->{zip} =~ s/^(.{5}).*/$1/os if $part->{zip};
+    $part->{zip} =~ s/^(.{5}).*/$1/s if $part->{zip};
 
     return $part;
 }
