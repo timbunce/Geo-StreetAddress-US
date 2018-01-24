@@ -356,7 +356,7 @@ my %address = (
         'number' => '1234',
         'street' => 'COUNTY HWY 60',
         'suffix' => 'E',
-        'type' => '',  # ?
+        'type'   => 'Hwy',
         'state' => 'CO'
         },
 
@@ -374,6 +374,636 @@ my %address = (
           'sec_unit_num' => '105',
           'sec_unit_type' => 'Ste'
         },
+    '123 West Main Avenue apt 9N' => {
+        number        => '123',
+        prefix        => 'W',
+        street        => 'Main',
+        type          => 'Ave',
+        sec_unit_type => 'apt',
+        sec_unit_num  => '9N',
+    },
+    '123 Main St 123456' => {
+        number        => '123',
+        street        => 'Main',
+        type          => 'St',
+        sec_unit_num  => '123456',
+    },
+    '123 Main Blvd FT456' => {
+        number        => '123',
+        street        => 'Main',
+        type          => 'Blvd',
+        sec_unit_num  => '456',
+        sec_unit_type => 'FT',
+    },
+    '1234 Main AV #567' => {
+        number        => '1234',
+        street        => 'Main',
+        type          => 'Ave',
+        sec_unit_type => '#',
+        sec_unit_num  => '567',
+    },
+    '123 County Road 456' => {
+        number        => '123',
+        street        => 'County Road 456',
+        type          => 'Rd',
+    },
+    '123 County Road 4' => {
+        number        => '123',
+        street        => 'County Road 4',
+        type          => 'Rd',
+    },
+    '123 County Road 4567' => {
+        number        => '123',
+        street        => 'County Road 4567',
+        type          => 'Rd',
+    },
+    '1234 Main Road FIP #567B' => {
+        number        => '1234',
+        street        => 'Main',
+        type          => 'Rd',
+        sec_unit_type => '#',
+        sec_unit_num  => '567B',
+    },
+    '1234 NW 56th ST Apt7890' => {
+        number        => '1234',
+        prefix        => 'NW',
+        street        => '56th',
+        type          => 'St',
+        sec_unit_type => 'Apt',
+        sec_unit_num  => '7890',
+    },
+    '1234 Main Ave B2' => {
+        number        => '1234',
+        street        => 'Main',
+        type          => 'Ave',
+        sec_unit_num  => 'B2',
+    },
+    '1234 Highway 56 S' => {
+        number        => '1234',
+        street        => 'Highway 56',
+        type          => 'Hwy',
+        suffix        => 'S',
+    },
+    '123 Road 4567' => {
+        number        => '123',
+        street        => 'Road 4567',
+        type          => 'Rd',
+    },
+    '1234 NW 56th Street 789' => {
+        number        => '1234',
+        prefix        => 'NW',
+        street        => '56th',
+        type          => 'St',
+        sec_unit_num  => '789',
+    },
+    '12 N. St. Boethius Blvd.' => {
+        number        => '12',
+        prefix        => 'N',
+        street        => 'St Boethius',
+        type          => 'Blvd',
+    },
+    '12 Main , Apt 3' => {
+        number        => '12',
+        street        => 'Main',
+        type          => '',
+        sec_unit_type => 'Apt',
+        sec_unit_num  => '3',
+    },
+    '1 E 24th St, Suite 567' => {
+        number        => '1',
+        prefix        => 'E',
+        street        => '24th',
+        type          => 'St',
+        sec_unit_type => 'Suite',
+        sec_unit_num  => '567',
+    },
+    '1 E. 24th St., Suite 567' => {
+        number        => '1',
+        prefix        => 'E',
+        street        => '24th',
+        type          => 'St',
+        sec_unit_type => 'Suite',
+        sec_unit_num  => '567',
+    },
+    '1234 Main Dr.NE. Apartment D5.' => {
+        number        => '1234',
+        street        => 'Main',
+        type          => 'Dr',
+        suffix        => 'NE',
+        sec_unit_type => 'Apartment',
+        sec_unit_num  => 'D5',
+    },
+    '12345 HIGHWAY 67 S' => {
+        number        => '12345',
+        street        => 'HIGHWAY 67',
+        type          => 'Hwy',
+        suffix        => 'S',
+    },
+    '1234 Highway 56 East' => {
+        number        => '1234',
+        street        => 'Highway 56',
+        type          => 'Hwy',
+        suffix        => 'E',
+    },
+    '1234 Main Drive, Apt 567' => {
+        number        => '1234',
+        street        => 'Main',
+        type          => 'Dr',
+        sec_unit_type => 'Apt',
+        sec_unit_num  => '567',
+    },
+    '1234 NW 56th Street 567' => {
+        number        => '1234',
+        prefix        => 'NW',
+        street        => '56th',
+        type          => 'St',
+        sec_unit_num  => '567',
+    },
+    '12 Main Place 4' => {
+        number        => '12',
+        street        => 'Main',
+        type          => 'Pl',
+        sec_unit_num  => '4',
+    },
+    '1234 LA MAIN MARINA' => {
+        number        => '1234',
+        street        => 'LA MAIN',
+        type          => 'Marina',
+    },
+    '1234 W. Main Blvd.' => {
+        number        => '1234',
+        prefix        => 'W',
+        street        => 'Main',
+        type          => 'Blvd',
+    },
+    '1234 Hwy T56 S' => {
+        number        => '1234',
+        street        => 'Hwy T56',
+        type          => 'Hwy',
+        suffix        => 'S',
+    },
+    '12345 Main St 67' => {
+        number        => '12345',
+        street        => 'Main',
+        type          => 'St',
+        sec_unit_num  => '67',
+    },
+    '123 Main Drive SPO # 4567' => {
+        number        => '123',
+        street        => 'Main',
+        type          => 'Dr',
+        sec_unit_type => 'SPO #',
+        sec_unit_num  => '4567',
+    },
+    '123 Main Ave Unit 4 123 Main Ave., Unit 4' => { # Almost double
+        number        => '123',
+        street        => 'Main Ave Unit 4 123 Main', # Not great, but poor input
+        type          => 'Ave',
+        sec_unit_type => 'Unit',
+        sec_unit_num  => '4',
+    },
+    '123 E Main St., Suite A' => {
+        number        => '123',
+        prefix        => 'E',
+        street        => 'Main',
+        type          => 'St',
+        sec_unit_type => 'Suite',
+        sec_unit_num  => 'A',
+    },
+    '123 E Main St, Suite A' => {
+        number        => '123',
+        prefix        => 'E',
+        street        => 'Main',
+        type          => 'St',
+        sec_unit_type => 'Suite',
+        sec_unit_num  => 'A',
+    },
+    '1234 Main Drive, apt 567' => {
+        number        => '1234',
+        street        => 'Main',
+        type          => 'Dr',
+        sec_unit_type => 'apt',
+        sec_unit_num  => '567',
+    },
+    'N1234 5th Avenue' => {
+        street        => '5th',
+        type          => 'Ave',
+        sec_unit_num  => 'N1234', # Arguable
+    },
+    '123 Great Main Ct' => {
+        number        => '123',
+        street        => 'Great Main',
+        type          => 'Ct',
+    },
+    'W1234 Main rd' => {
+        street        => 'Main',
+        type          => 'Rd',
+        sec_unit_num  => 'W1234', # Arguable
+    },
+    '1234 nw cove cir.' => {
+        number        => '1234',
+        prefix        => 'nw',
+        street        => 'cove',
+        type          => 'Cir',
+    },
+    '1234 nw cove cir' => {
+        number        => '1234',
+        prefix        => 'nw',
+        street        => 'cove',
+        type          => 'Cir',
+    },
+    'N1234 MAIN LN' => {
+        street        => 'MAIN',
+        type          => 'Ln',
+        sec_unit_num  => 'N1234', # Arguable
+    },
+    '1 S.4th Ave' => {
+        number        => '1',
+        prefix        => 'S',
+        street        => '4th',
+        type          => 'Ave',
+    },
+    '1234 Main Street, Suite 567' => {
+        number        => '1234',
+        street        => 'Main',
+        type          => 'St',
+        sec_unit_type => 'Suite',
+        sec_unit_num  => '567',
+    },
+    '1234 Van Zandt County Road 5678' => {
+        number        => '1234',
+        street        => 'Van Zandt County Road 5678',
+        type          => 'Rd',
+    },
+    '123 Main Ave SW, Suite A' => {
+        number        => '123',
+        street        => 'Main',
+        type          => 'Ave',
+        suffix        => 'SW',
+        sec_unit_type => 'Suite',
+        sec_unit_num  => 'A',
+    },
+    '12 Main Place 3' => {
+        number        => '12',
+        street        => 'Main',
+        type          => 'Pl',
+        sec_unit_num  => '3',
+    },
+    '1234 Main Dr, Apt 56789' => {
+        number        => '1234',
+        street        => 'Main',
+        type          => 'Dr',
+        sec_unit_type => 'Apt',
+        sec_unit_num  => '56789',
+    },
+    'W1234 Cty Rd FF' => {
+        street        => 'Cty Rd FF',
+        type          => 'Rd',
+        sec_unit_num  => 'W1234',
+    },
+    '12345 Mainy Main Ct.' => {
+        number        => '12345',
+        street        => 'Mainy Main',
+        type          => 'Ct',
+    },
+    'S1234 Main St' => {
+        street        => 'Main',
+        type          => 'St',
+        sec_unit_num  => 'S1234',
+    },
+    '12345                                                           NW 601st Rd.AB-7890123' => {
+        number        => '12345',
+        prefix        => 'NW',
+        street        => '601st RdAB', # Not ideal
+        type          => 'Rd',
+        sec_unit_num  => '7890123',
+    },
+    '1234 Main Dr, 56' => {
+        number        => '1234',
+        street        => 'Main',
+        type          => 'Dr',
+        sec_unit_num  => '56',
+    },
+    '1234 Main Circle # 5' => {
+        number        => '1234',
+        street        => 'Main',
+        type          => 'Cir',
+        sec_unit_type => '#',
+        sec_unit_num  => '5',
+    },
+    '123 Main Ave.#4A' => {
+        number        => '123',
+        street        => 'Main',
+        type          => 'Ave',
+        sec_unit_type => '#',
+        sec_unit_num  => '4A',
+    },
+    '1234 Main #56' => {
+        number        => '1234',
+        street        => 'Main',
+        type          => '',
+        sec_unit_type => '#',
+        sec_unit_num  => '56',
+    },
+    '1234 S. Main Mall #5678' => {
+        number        => '1234',
+        prefix        => 'S',
+        street        => 'Main Mall',
+        type          => '',
+        sec_unit_type => '#',
+        sec_unit_num  => '5678',
+    },
+    'Post Office Box 12345' => { # Poor
+        street        => 'Post Office',
+        type          => '',
+        sec_unit_type => 'Box',
+        sec_unit_num  => '12345',
+    },
+    'Unit 12345 Box 678' => { # Poor
+        street        => 'Box',
+        type          => '',
+        sec_unit_type => 'Unit',
+        sec_unit_num  => '12345',
+    },
+    'PO Box 1234' => { # Poor
+        sec_unit_type => 'PO Box',
+        sec_unit_num  => '1234',
+    },
+    '1234 West Main Drive 5A' => {
+        number        => '1234',
+        prefix        => 'W',
+        street        => 'Main',
+        type          => 'Dr',
+        sec_unit_num  => '5A',
+    },
+    '123 Main Pl 45A' => {
+        number        => '123',
+        street        => 'Main',
+        type          => 'Pl',
+        sec_unit_num  => '45A',
+    },
+    # Problematic. We require zip to come at end, so ABC confuses things in
+    # that regard. ShipMe could presumably be treated as a unit, but even that
+    # seems arguable.
+    '1234 NW 56th Avenue ShipMe 78901 ABC' => { # Poor
+        number        => '1234',
+        prefix        => 'NW',
+        street        => '56th Avenue ShipMe 78901', # Not ideal
+        type          => 'Ave',
+        sec_unit_num  => 'C',
+        zip           => '78901',
+    },
+    '1234 Main Drive ABC Pod A' => {
+        number        => '1234',
+        street        => 'Main',
+        type          => 'Dr',
+        sec_unit_type => 'Pod',
+        sec_unit_num  => 'A',
+    },
+    '1 N 21st Ave Hammock' => { # Poor
+        number        => '1',
+        prefix        => 'N',
+        street        => '21st Ave Hammock', # Not ideal
+        type          => 'Ave',
+    },
+    'Ab 12 box 3456' => { # Poor
+        street        => 'Ab 12', # Maybe not ideal
+        type          => '',
+        sec_unit_type => 'box',
+        sec_unit_num  => '3456',
+    },
+    '1234 east Avenue a5' => { # Poor
+        number        => '1234',
+        street        => 'east',
+        type          => 'Ave',
+        sec_unit_num  => 'a5',
+    },
+    '1234 N Main Rd A5-678' => {
+        number        => '1234',
+        prefix        => 'N',
+        street        => 'Main',
+        type          => 'Rd',
+        sec_unit_num  => 'A5-678',
+    },
+    '12345 NW 61ST ST STE 789 0123456' => { # Poor
+        number        => '12345',
+        prefix        => 'NW',
+        street        => '61ST',
+        type          => 'St',
+        sec_unit_type => 'STE', # Suite
+        sec_unit_num  => '789 0123456',
+    },
+    '12345 co rd 14' => {
+        number        => '12345',
+        street        => 'co rd 14',
+        type          => 'Rd',
+    },
+    '123 E. Ave. A-4' => {
+        number        => '123',
+        street        => 'E',
+        type          => 'Ave',
+        sec_unit_num  => 'A-4',
+    },
+    '123 N Main Street, 4A' => {
+        number        => '123',
+        prefix        => 'N',
+        street        => 'Main',
+        type          => 'St',
+        sec_unit_num  => '4A',
+    },
+    'Post Office Box 12345' => {
+        sec_unit_type => 'Post Office Box',
+        sec_unit_num  => '12345',
+    },
+    '1234 S Main' => {
+        number        => '1234',
+        prefix        => 'S',
+        street        => 'Main',
+        type          => '',
+    },
+    '1234 Main Dr Apt 5 A' => {
+        number        => '1234',
+        street        => 'Main',
+        type          => 'Dr',
+        sec_unit_type => 'Apt',
+        sec_unit_num  => '5 A',
+    },
+    '123 Main Pl 45a' => {
+        number        => '123',
+        street        => 'Main',
+        type          => 'Pl',
+        sec_unit_num  => '45a',
+    },
+    '1234 E Farm Rd 567' => {
+        number        => '1234',
+        prefix        => 'E',
+        street        => 'Farm Rd 567',
+        type          => 'Rd',
+    },
+    '1234 Ga hwy 567' => {
+        number        => '1234',
+        street        => 'Ga hwy 567',
+        type          => 'Hwy',
+    },
+    '123 42nd Avenue Southeast, A' => {
+        number        => '123',
+        street        => '42nd',
+        type          => 'Ave',
+        suffix        => 'SE',
+        sec_unit_num  => 'A',
+    },
+    '123 Main Ave, 45th Floor' => {
+        number        => '123',
+        street        => 'Main',
+        type          => 'Ave',
+        sec_unit_num  => '45th',
+        sec_unit_type => 'Floor',
+    },
+    '123 Main Ave 4a' => {
+        number        => '123',
+        street        => 'Main',
+        type          => 'Ave',
+        sec_unit_num  => '4a',
+    },
+    # Ideally we could treat Big Beach as city and pull zipcode. However there
+    # are issues doing that as it is easy to confuse them with street names and
+    # vice versa.
+    '1234 Main Blvd, Big Beach, 56789' => {
+        number        => '1234',
+        street        => 'Main',
+        type          => 'Blvd',
+    },
+    '1234  Main Drive 567, 1234  Main Drive567' => { # Poor
+        number        => '1234',
+        street        => 'Main',
+        type          => 'Dr',
+        sec_unit_num  => '567',
+    },
+    '12345 N 63rd Ave #7890 12345 N 63rd Ave #7890' => { # Poor
+        number        => '12345',
+        prefix        => 'N',
+        street        => '63rd Ave #7890 12345 N 63rd', # Not ideal
+        type          => 'Ave',
+        sec_unit_type => '#',
+        sec_unit_num  => '7890',
+    },
+    '123 Main Blvd AB0123456789' => {
+        number        => '123',
+        street        => 'Main',
+        type          => 'Blvd',
+        sec_unit_num  => '0123456789',
+    },
+    '1234 W MAIN ST APT 5 APT 5' => { # Poor
+        number        => '1234',
+        prefix        => 'W',
+        street        => 'MAIN ST APT 5', # Not ideal
+        type          => 'St',
+        sec_unit_type => 'APT',
+        sec_unit_num  => '5',
+    },
+    '1234 NW 56th ST BLD A B' => { # Poor
+        number        => '1234',
+        prefix        => 'NW',
+        street        => '56th ST BLD A', # Not ideal
+        type          => 'St',
+        sec_unit_type => 'BLD',
+        sec_unit_num  => 'B',
+    },
+    '123-45 main ave # 678' => {
+        number        => '123-45',
+        street        => 'main',
+        type          => 'Ave',
+        sec_unit_type => '#',
+        sec_unit_num  => '678',
+    },
+    '1234 Main Rd NW Apt 567 A' => {
+        number        => '1234',
+        street        => 'Main',
+        type          => 'Rd',
+        suffix        => 'NW',
+        sec_unit_type => 'Apt',
+        sec_unit_num  => '567 A',
+    },
+    '1234 State Route 56-A' => {
+        number        => '1234',
+        street        => 'State Route 56-A',
+        type          => 'Rte',
+    },
+    '1234 N Main Island Dr Suit A' => { # Typo in suite
+        number        => '1234',
+        prefix        => 'N',
+        street        => 'Main Island',
+        type          => 'Dr',
+        sec_unit_type => 'Suit',
+        sec_unit_num  => 'A',
+    },
+    '1234 NW 56th street, Suit, ab7' => { # Poor
+        number        => '1234',
+        prefix        => 'NW',
+        street        => '56th',
+        type          => 'St',
+        sec_unit_type => 'Suit',
+        sec_unit_num  => 'ab7',
+    },
+    '123 Main St. Unit 4 AB12CD4567' => {
+        number        => '123',
+        street        => 'Main St Unit 4', # Not ideal
+        type          => 'St',
+        sec_unit_type => '4 A', # Not ideal
+        sec_unit_num  => '12CD4567',
+    },
+    '123 E VALLEY BLVD' => {
+        number        => '123',
+        street        => 'E', # Not ideal
+        type          => 'Vly', # Not ideal
+        sec_unit_num  => 'D', # Not ideal
+    },
+    '123 HIGHWAY 45S' => {
+        number        => '123',
+        street        => 'HIGHWAY 45',
+        type          => 'Hwy',
+        suffix        => 'S',
+    },
+    '1234 State Route 56 N' => {
+        number        => '1234',
+        street        => 'State', # Not ideal
+        type          => 'Rte',
+        sec_unit_num  => '56 N', # Not ideal
+    },
+    'apt-ab12345 6789Nw 10th St' => { # Poor
+        street        => '6789', # Not ideal
+        type          => '', # Not ideal
+        suffix        => 'Nw', # Not ideal
+        sec_unit_type => 'apt',
+        sec_unit_num  => 'ab12345',
+    },
+    'P o box 1234' => {
+        sec_unit_type => 'P o box',
+        sec_unit_num  => '1234',
+    },
+    '1234 SR 56 City Fl 78901' => {
+        number        => '1234',
+        street        => 'SR',
+        type          => '',
+        sec_unit_num  => '56',
+        city          => 'City',
+        state         => 'Fl',
+        zip           => '78901',
+    },
+    '1 Main Street Ft#23' => {
+        number        => '1',
+        street        => 'Main',
+        type          => 'St',
+        sec_unit_type => 'Ft',
+        sec_unit_num  => '23',
+    },
+    '12 Main st Ft#345' => {
+        number        => '12',
+        street        => 'Main',
+        type          => 'St',
+        sec_unit_type => 'Ft',
+        sec_unit_num  => '345',
+    },
 
 );
 
