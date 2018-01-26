@@ -657,7 +657,7 @@ my %address = (
         sec_unit_num  => '56789',
     },
     'W1234 Cty Rd FF' => {
-        street        => 'Cty Rd FF',
+        street        => 'Cty',
         type          => 'Rd',
         sec_unit_num  => 'W1234',
     },
@@ -674,7 +674,7 @@ my %address = (
     '12345                                                           NW 601st Rd.AB-7890123' => {
         number        => '12345',
         prefix        => 'NW',
-        street        => '601st RdAB', # Not ideal
+        street        => '601st',
         type          => 'Rd',
         sec_unit_num  => '7890123',
     },
@@ -708,8 +708,8 @@ my %address = (
     '1234 S. Main Mall #5678' => {
         number        => '1234',
         prefix        => 'S',
-        street        => 'Main Mall',
-        type          => '',
+        street        => 'Main',
+        type          => 'Mall',
         sec_unit_type => '#',
         sec_unit_num  => '5678',
     },
@@ -748,10 +748,10 @@ my %address = (
     '1234 NW 56th Avenue ShipMe 78901 ABC' => { # Poor
         number        => '1234',
         prefix        => 'NW',
-        street        => '56th Avenue ShipMe 78901', # Not ideal
+        street        => '56th',
         type          => 'Ave',
-        sec_unit_num  => 'C',
-        zip           => '78901',
+        sec_unit_type => 'ShipMe',
+        sec_unit_num  => '78901',
     },
     '1234 Main Drive ABC Pod A' => {
         number        => '1234',
@@ -763,14 +763,13 @@ my %address = (
     '1 N 21st Ave Hammock' => { # Poor
         number        => '1',
         prefix        => 'N',
-        street        => '21st Ave Hammock', # Not ideal
+        street        => '21st',
         type          => 'Ave',
     },
     'Ab 12 box 3456' => { # Poor
-        street        => 'Ab 12', # Maybe not ideal
+        street        => 'Ab',
         type          => '',
-        sec_unit_type => 'box',
-        sec_unit_num  => '3456',
+        sec_unit_num  => '12',
     },
     '1234 east Avenue a5' => { # Poor
         number        => '1234',
@@ -893,10 +892,10 @@ my %address = (
         type          => 'Blvd',
         sec_unit_num  => '0123456789',
     },
-    '1234 W MAIN ST APT 5 APT 5' => { # Poor
+    '1234 W MAIN ST APT 5 APT 6' => { # Poor
         number        => '1234',
         prefix        => 'W',
-        street        => 'MAIN ST APT 5', # Not ideal
+        street        => 'MAIN',
         type          => 'St',
         sec_unit_type => 'APT',
         sec_unit_num  => '5',
@@ -904,10 +903,10 @@ my %address = (
     '1234 NW 56th ST BLD A B' => { # Poor
         number        => '1234',
         prefix        => 'NW',
-        street        => '56th ST BLD A', # Not ideal
+        street        => '56th',
         type          => 'St',
         sec_unit_type => 'BLD',
-        sec_unit_num  => 'B',
+        sec_unit_num  => 'A',
     },
     '123-45 main ave # 678' => {
         number        => '123-45',
@@ -947,10 +946,10 @@ my %address = (
     },
     '123 Main St. Unit 4 AB12CD4567' => {
         number        => '123',
-        street        => 'Main St Unit 4', # Not ideal
+        street        => 'Main',
         type          => 'St',
-        sec_unit_type => '4 A', # Not ideal
-        sec_unit_num  => '12CD4567',
+        sec_unit_type => 'Unit',
+        sec_unit_num  => '4',
     },
     '123 E VALLEY BLVD' => {
         number        => '123',
@@ -966,9 +965,8 @@ my %address = (
     },
     '1234 State Route 56 N' => {
         number        => '1234',
-        street        => 'State', # Not ideal
-        type          => 'Rte',
-        sec_unit_num  => '56 N', # Not ideal
+        street        => 'State Route 56',
+        type          => 'Rte', # Ideally we could have suffix N
     },
     'apt-ab12345 6789Nw 10th St' => { # Poor
         street        => '6789', # Not ideal
@@ -1003,6 +1001,72 @@ my %address = (
         type          => 'St',
         sec_unit_type => 'Ft',
         sec_unit_num  => '345',
+    },
+    "123 E Main St, Apt 456\n123 E Main St, Apt 456" => { # Poor
+        number        => '123',
+        prefix        => 'E',
+        street        => 'Main',
+        type          => 'St',
+        sec_unit_type => 'Apt',
+        sec_unit_num  => '456',
+    },
+    '12Main st' => {
+        number        => '12',
+        street        => 'Main',
+        type          => 'St',
+    },
+    '1234 N Main Avenue, Apartment 567 N/A' => {
+        number        => '1234',
+        prefix        => 'N',
+        street        => 'Main',
+        type          => 'Ave',
+        sec_unit_type => 'Apartment',
+        sec_unit_num  => '567',
+    },
+    '1234 E 5th Street, Apt 6789 Apartment 6789' => {
+        number        => '1234',
+        prefix        => 'E',
+        street        => '5th',
+        type          => 'St',
+        sec_unit_type => 'Apt',
+        sec_unit_num  => '6789',
+    },
+    '123main st' => {
+        number        => '123',
+        street        => 'main',
+        type          => 'St',
+    },
+    '1234 N Main Ave, Mailbox 0567' => {
+        number        => '1234',
+        prefix        => 'N',
+        street        => 'Main',
+        type          => 'Ave',
+        sec_unit_type => 'Mailbox',
+        sec_unit_num  => '0567',
+    },
+    '123 W 42nd St, New York, NY, United States' => {
+        number        => '123',
+        prefix        => 'W',
+        street        => '42nd',
+        type          => 'St',
+        city          => 'New York',
+        state         => 'NY',
+    },
+    '123 N Main St Boethius, TX 45678 United States' => {
+        number        => '123',
+        prefix        => 'N',
+        street        => 'Main',
+        type          => 'St',
+        city          => 'Boethius',
+        state         => 'TX',
+        zip           => '45678',
+    },
+    '12 Main St Apt 3A Apt 4B' => {
+        number        => '12',
+        street        => 'Main',
+        type          => 'St',
+        sec_unit_type => 'Apt',
+        sec_unit_num  => '3A',
     },
 
 );

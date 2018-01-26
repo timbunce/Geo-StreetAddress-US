@@ -387,6 +387,7 @@ our %Street_Type = (
     meadow      => "mdw",
     meadows     => "mdws",
     medows      => "mdws",
+    mall        => 'mall',
     mill        => "ml",
     mills       => "mls",
     mission     => "msn",
@@ -806,7 +807,7 @@ sub init {
           # special case for addresses like 100 South Street
           (?:($Addr_Match{direct})\W+           (?{ $_{street} = $^N })
              ($Addr_Match{type})\b              (?{ $_{type}   = $^N }))
-             #(?{ $_{_street_debug}.=1 })
+            #(?{ $_{_street_debug}.=1 })
           |
           (?:($Addr_Match{direct})\W+           (?{ $_{prefix} = $^N }))?
           (?:
@@ -847,7 +848,7 @@ sub init {
             #(?{ $_{_street_debug}.=5 })
            |
             # e.g. "Main" with no street type.
-            ([^,\x23]+?)                        (?{ $_{street} = $^N; $_{type}||='' })
+            ([^,\x23\s]+?)                      (?{ $_{street} = $^N; $_{type}||='' })
             (?:[^\w,]+($Addr_Match{type})\b     (?{ $_{type}   = $^N }))?
             (?:[^\w,]+($Addr_Match{direct})\b   (?{ $_{suffix} = $^N }))?
             #(?{ $_{_street_debug}.=6 })
@@ -881,6 +882,8 @@ sub init {
             |tra?i?le?r
             |pod
             |p(?:ost)?\W*o(?:ffice)?\W*box
+            |mail\W*box
+            |ship\w*
             |box)(?![a-z])            (?{ $_{sec_unit_type}   = $^N })
         /ix;
 
@@ -913,7 +916,7 @@ sub init {
         |
         # "45th floor". We must localize sec_unit_num as we'll very often
         # backtrack out of here.
-        (\w+?)\b                     (?{ local $_{_sec_unit_num} = $^N })
+        (\d+?(?:st|nd|rd|th))\b       (?{ local $_{_sec_unit_num} = $^N })
         \W*?$Addr_Match{sec_unit_type_numbered}
         #(?{ $_{_sec_unit_debug}.=2 })
         |
@@ -925,7 +928,7 @@ sub init {
         # "FT123": sec_unit_num: "123". "FIP #567B": sec_unit_type: "#",
         # sec_unit_num: "567B".
         (?-i:[A-Z]{2,3})
-        \s*
+        [\s-]*
         (?:(\#)                      (?{ $_{sec_unit_type}   = $^N }))?
         (\w+)\b                      (?{ $_{sec_unit_num}    = $^N })
         #(?{ $_{_sec_unit_debug}.=4 })
@@ -937,7 +940,7 @@ sub init {
         |
         # "5A", "Apt 5 A"
         (?:$Addr_Match{sec_unit_type_numbered}\W* (?{ $_{sec_unit_type} = $^N }))?
-        (\d+[\s-]?[A-Z])\b           (?{ $_{sec_unit_num}    = $^N })
+        (\d+[\s-]?[a-df-mo-rt-vx-z])\b            (?{ $_{sec_unit_num}    = $^N })
         #(?{ $_{_sec_unit_debug}.=6 })
         |
         # "A5-678"
