@@ -915,11 +915,12 @@ sub init {
         # backtrack out of here.
         (\w+?)\b                     (?{ local $_{_sec_unit_num} = $^N })
         \W*?$Addr_Match{sec_unit_type_numbered}
+        #(?{ $_{_sec_unit_debug}.=2 })
         |
         # STE 789 0123456
         $Addr_Match{sec_unit_type_numbered} \W* (?{ $_{sec_unit_type} = $^N })
         ((?:\d[\s-]*){1,10})         (?{ $_{sec_unit_num}    = $^N })
-        #(?{ $_{_sec_unit_debug}.=2 })
+        #(?{ $_{_sec_unit_debug}.=3 })
         |
         # "FT123": sec_unit_num: "123". "FIP #567B": sec_unit_type: "#",
         # sec_unit_num: "567B".
@@ -927,24 +928,24 @@ sub init {
         \s*
         (?:(\#)                      (?{ $_{sec_unit_type}   = $^N }))?
         (\w+)\b                      (?{ $_{sec_unit_num}    = $^N })
-        #(?{ $_{_sec_unit_debug}.=3 })
+        #(?{ $_{_sec_unit_debug}.=4 })
         |
         # "B2": sec_unit_num: B2, "Apt B2"
         (?:$Addr_Match{sec_unit_type_numbered}\W* (?{ $_{sec_unit_type} = $^N }))?
         ([a-z][\s-]?\d+)\b           (?{ $_{sec_unit_num}    = $^N })
-        #(?{ $_{_sec_unit_debug}.=4 })
+        #(?{ $_{_sec_unit_debug}.=5 })
         |
         # "5A", "Apt 5 A"
         (?:$Addr_Match{sec_unit_type_numbered}\W* (?{ $_{sec_unit_type} = $^N }))?
         (\d+[\s-]?[A-Z])\b           (?{ $_{sec_unit_num}    = $^N })
-        #(?{ $_{_sec_unit_debug}.=5 })
+        #(?{ $_{_sec_unit_debug}.=6 })
         |
         # "A5-678"
         ((?-i:[A-Z])\d[\s-]\d+)      (?{ $_{sec_unit_num}    = $^N })
-        #(?{ $_{_sec_unit_debug}.=6 })
+        #(?{ $_{_sec_unit_debug}.=7 })
         |
             $Addr_Match{sec_unit_type_unnumbered}
-        #(?{ $_{_sec_unit_debug}.=7 })
+        #(?{ $_{_sec_unit_debug}.=8 })
         )
         (?{ $_{sec_unit_num} = $_{_sec_unit_num} if exists $_{_sec_unit_num} })
         /ix;
@@ -957,11 +958,12 @@ sub init {
         $Addr_Match{sec_unit_before_street}
         |
         (\d{1,4}|\d{6,8}|\d{10,})\b (?{ $_{sec_unit_num} = $^N })
-        #(?{ $_{_sec_unit_debug}.=8 })
+        #(?{ $_{_sec_unit_debug}.=9 })
         |
         # "A". Don't include N, E, S, W because we'll conflict with
         # directions...
         ([a-df-mo-rt-vx-z0-9])\b    (?{ $_{sec_unit_num} = $^N })
+        #(?{ $_{_sec_unit_debug}.='A' })
         )
         (?{ $_{sec_unit_num} = $_{_sec_unit_num} if exists $_{_sec_unit_num} })
         /ix;
