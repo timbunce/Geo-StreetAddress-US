@@ -622,7 +622,7 @@ our %State_Code = (
 
 Maps two-digit FIPS-55 US state and territory codes (including the
 leading zero!) as found in TIGER/Line to the state's canonical two-letter
-postal abbreviation. See eg/get_state_fips.pl in the distrbution for
+postal abbreviation. See eg/get_state_fips.pl in the distribution for
 how this map was generated. Yes, I know the FIPS data also has the state
 names. Oops.
 
@@ -1276,7 +1276,7 @@ addresses (for my purposes). If you want USPS-style address standardization,
 try Scrape::USPS::ZipLookup(3pm). Be aware, however, that it scrapes a form on
 the USPS website in a way that may not be officially permitted and might break
 at any time. If this module does not do what you want, you might give the
-othersa try. All three modules are available from the CPAN.
+others a try. All three modules are available from the CPAN.
 
 You can see Geo::StreetAddress::US in action at L<http://geocoder.us/>.
 
