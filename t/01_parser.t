@@ -1071,7 +1071,12 @@ my %address = (
         sec_unit_type => 'Apt',
         sec_unit_num  => '3A',
     },
-
+    'Flat 123, 32 Main St.' => {
+        type          => 'St',
+        sec_unit_num  => '123',
+        street        => '32 Main',
+        sec_unit_type => 'Flat'
+    },
 );
 
 

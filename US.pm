@@ -875,12 +875,12 @@ sub init {
 
     # http://pe.usps.com/text/pub28/pub28c2_003.htm
     # TODO add support for those that don't require a number
-    # TODO map to standard names/abbreviations
     $Addr_Match{sec_unit_type_numbered} = qr/
           (su?i?te?
             |s?p\W*[om]\W*b?(?:ox)?
             |(?:ap|dep)(?:ar)?t(?:me?nt)?
             |ro*m
+            |flat
             |flo*r?
             |f(?:ron)?t
             |uni?t
