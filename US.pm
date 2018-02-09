@@ -893,7 +893,7 @@ sub init {
             |stop
             |tra?i?le?r
             |pod
-            |p(?:ost)?\W*o(?:ffice)?\W*box
+            |(?:u\.?s)\W*p(?:ost)?\W*[0o](?:ffice)?\W*(?:box)?
             |mail\W*box
             |ship\w*
             |box)(?![a-z])            (?{ $_{sec_unit_type}   = $^N })
