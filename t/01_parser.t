@@ -813,10 +813,6 @@ my %address = (
         type          => 'St',
         sec_unit_num  => '4A',
     },
-    'Post Office Box 12345' => {
-        sec_unit_type => 'Post Office Box',
-        sec_unit_num  => '12345',
-    },
     '1234 S Main' => {
         number        => '1234',
         prefix        => 'S',
