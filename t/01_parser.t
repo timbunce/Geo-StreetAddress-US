@@ -714,10 +714,9 @@ my %address = (
         sec_unit_num  => '5678',
     },
     'Post Office Box 12345' => { # Poor
-        street        => 'Post Office',
+        street        => 'Post',
         type          => '',
-        sec_unit_type => 'Box',
-        sec_unit_num  => '12345',
+        sec_unit_type => 'Office',
     },
     'Unit 12345 Box 678' => { # Poor
         street        => 'Box',
@@ -725,7 +724,11 @@ my %address = (
         sec_unit_type => 'Unit',
         sec_unit_num  => '12345',
     },
-    'PO Box 1234' => { # Poor
+    'PO Box 1234' => {
+        sec_unit_type => 'PO Box',
+        sec_unit_num  => '1234',
+    },
+    'P.O. 1234' => {
         sec_unit_type => 'PO Box',
         sec_unit_num  => '1234',
     },

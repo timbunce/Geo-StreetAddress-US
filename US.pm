@@ -169,6 +169,17 @@ our %Directional = (
 
 our %Direction_Code; # setup in init();
 
+
+our %Sec_Unit_Type = (
+    'p0 box'         => 'PO Box',
+    'p0'             => 'PO Box',
+    'po'             => 'PO Box',
+    'po box'         => 'PO Box',
+    'post office'    => 'PO Box',
+    'uspo'           => 'PO Box',
+    'us post office' => 'PO Box',
+);
+
 =head2 %Street_Type
 
 Maps lowercased USPS standard street types to their canonical postal
@@ -703,16 +714,17 @@ our %Addr_Match; # setup in init()
 init();
 
 our %Normalize_Map = (
-    prefix  => \%Directional,
-    prefix1 => \%Directional,
-    prefix2 => \%Directional,
-    suffix  => \%Directional,
-    suffix1 => \%Directional,
-    suffix2 => \%Directional,
-    type    => \%Street_Type,
-    type1   => \%Street_Type,
-    type2   => \%Street_Type,
-    state   => \%State_Code,
+    prefix        => \%Directional,
+    prefix1       => \%Directional,
+    prefix2       => \%Directional,
+    suffix        => \%Directional,
+    suffix1       => \%Directional,
+    suffix2       => \%Directional,
+    type          => \%Street_Type,
+    type1         => \%Street_Type,
+    type2         => \%Street_Type,
+    sec_unit_type => \%Sec_Unit_Type,
+    state         => \%State_Code,
 );
 
 
