@@ -1017,7 +1017,7 @@ sub init {
     # Being non-greedy here allows us to parse "#" in unit.
     my $sep = qr/(?:\W+?|\Z)/;
 
-    $Addr_Match{informal_address_pre} = qr/
+    $Addr_Match{informal_address} = qr/
         ^
         \s*         # skip leading whitespace
         (?:$Addr_Match{sec_unit_before_street} $sep)?
@@ -1030,31 +1030,12 @@ sub init {
            $Addr_Match{street} $sep
         (?:$Addr_Match{sec_unit_after_street} $sep)?
         (?:$Addr_Match{place})
-        /ix;
-
-    $Addr_Match{informal_address_post} = qr/
         (?{ $_{number} = $_{_number} if exists $_{_number} })
         (?{ $_{city} = $_{_city} if exists $_{_city} })
         # This ugliness is so that we prefer the first unit if we parse it in
         # two spots. It matters for things like "Unit 12345 Box 678".
         (?{ $_{sec_unit_type} = $_{_sec_unit_type1} if exists $_{_sec_unit_type1} })
         (?{ $_{sec_unit_num}  = $_{_sec_unit_num1}  if exists $_{_sec_unit_num1} })
-        /ix;
-
-    $Addr_Match{informal_address} = qr/
-        $Addr_Match{informal_address_pre}
-
-        # Matching to end of string is desirable. Otherwise we can fail to
-        # fully parse things that are present yet are optional. Consider the
-        # "12 Main , Apt 3" test case.
-        $
-
-        $Addr_Match{informal_address_post}
-        /ix;
-
-    $Addr_Match{informal_address_partial} = qr/
-        $Addr_Match{informal_address_pre}
-        $Addr_Match{informal_address_post}
         /ix;
 
     $Addr_Match{intersection} = qr/^\W*
@@ -1146,14 +1127,6 @@ sub parse_informal_address {
     local %_;
 
     if ($addr =~ /$Addr_Match{informal_address}/is) {
-        return $class->normalize_address({ %_ });
-    }
-    %_ = ();
-
-    # If we can't fully match the string, fall back to a partial match. We want
-    # to try to fully match the string first as otherwise we can leave parts
-    # unmatched that do match.
-    if ($addr =~ /$Addr_Match{informal_address_partial}/is) {
         return $class->normalize_address({ %_ });
     }
 
