@@ -713,11 +713,9 @@ my %address = (
         sec_unit_type => '#',
         sec_unit_num  => '5678',
     },
-    'Post Office Box 12345' => { # Poor
-        street        => 'Post Office',
-        type          => '',
-        sec_unit_type => 'Box',
-        sec_unit_num  => '12345',
+    'Post Office Box 12345' => {
+        sec_unit_num => '12345',
+        sec_unit_type => 'PO Box',
     },
     'Unit 12345 Box 678' => { # Poor
         street        => 'Box',
@@ -725,7 +723,11 @@ my %address = (
         sec_unit_type => 'Unit',
         sec_unit_num  => '12345',
     },
-    'PO Box 1234' => { # Poor
+    'PO Box 1234' => {
+        sec_unit_type => 'PO Box',
+        sec_unit_num  => '1234',
+    },
+    'P.O. 1234' => {
         sec_unit_type => 'PO Box',
         sec_unit_num  => '1234',
     },
@@ -809,10 +811,6 @@ my %address = (
         street        => 'Main',
         type          => 'St',
         sec_unit_num  => '4A',
-    },
-    'Post Office Box 12345' => {
-        sec_unit_type => 'Post Office Box',
-        sec_unit_num  => '12345',
     },
     '1234 S Main' => {
         number        => '1234',
@@ -1068,7 +1066,12 @@ my %address = (
         sec_unit_type => 'Apt',
         sec_unit_num  => '3A',
     },
-
+    'Flat 123, 32 Main St.' => {
+        type          => 'St',
+        sec_unit_num  => '123',
+        street        => '32 Main',
+        sec_unit_type => 'Flat'
+    },
 );
 
 

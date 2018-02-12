@@ -169,6 +169,18 @@ our %Directional = (
 
 our %Direction_Code; # setup in init();
 
+
+our %Sec_Unit_Type = (
+    'p0 box'          => 'PO Box',
+    'p0'              => 'PO Box',
+    'po'              => 'PO Box',
+    'po box'          => 'PO Box',
+    'post office'     => 'PO Box',
+    'post office box' => 'PO Box',
+    'uspo'            => 'PO Box',
+    'us post office'  => 'PO Box',
+);
+
 =head2 %Street_Type
 
 Maps lowercased USPS standard street types to their canonical postal
@@ -703,16 +715,17 @@ our %Addr_Match; # setup in init()
 init();
 
 our %Normalize_Map = (
-    prefix  => \%Directional,
-    prefix1 => \%Directional,
-    prefix2 => \%Directional,
-    suffix  => \%Directional,
-    suffix1 => \%Directional,
-    suffix2 => \%Directional,
-    type    => \%Street_Type,
-    type1   => \%Street_Type,
-    type2   => \%Street_Type,
-    state   => \%State_Code,
+    prefix        => \%Directional,
+    prefix1       => \%Directional,
+    prefix2       => \%Directional,
+    suffix        => \%Directional,
+    suffix1       => \%Directional,
+    suffix2       => \%Directional,
+    type          => \%Street_Type,
+    type1         => \%Street_Type,
+    type2         => \%Street_Type,
+    sec_unit_type => \%Sec_Unit_Type,
+    state         => \%State_Code,
 );
 
 
@@ -863,12 +876,12 @@ sub init {
 
     # http://pe.usps.com/text/pub28/pub28c2_003.htm
     # TODO add support for those that don't require a number
-    # TODO map to standard names/abbreviations
     $Addr_Match{sec_unit_type_numbered} = qr/
           (su?i?te?
             |s?p\W*[om]\W*b?(?:ox)?
             |(?:ap|dep)(?:ar)?t(?:me?nt)?
             |ro*m
+            |flat
             |flo*r?
             |f(?:ron)?t
             |uni?t
@@ -881,7 +894,7 @@ sub init {
             |stop
             |tra?i?le?r
             |pod
-            |p(?:ost)?\W*o(?:ffice)?\W*box
+            |(?:u\.?s)?\W*p(?:ost)?\W*[0o](?:ffice)?\W*(?:box)?
             |mail\W*box
             |ship\w*
             |box)(?![a-z])            (?{ $_{sec_unit_type}   = $^N })
@@ -1005,7 +1018,7 @@ sub init {
     # Being non-greedy here allows us to parse "#" in unit.
     my $sep = qr/(?:\W+?|\Z)/;
 
-    $Addr_Match{informal_address_pre} = qr/
+    $Addr_Match{informal_address} = qr/
         ^
         \s*         # skip leading whitespace
         (?:$Addr_Match{sec_unit_before_street} $sep)?
@@ -1018,31 +1031,12 @@ sub init {
            $Addr_Match{street} $sep
         (?:$Addr_Match{sec_unit_after_street} $sep)?
         (?:$Addr_Match{place})
-        /ix;
-
-    $Addr_Match{informal_address_post} = qr/
         (?{ $_{number} = $_{_number} if exists $_{_number} })
         (?{ $_{city} = $_{_city} if exists $_{_city} })
         # This ugliness is so that we prefer the first unit if we parse it in
         # two spots. It matters for things like "Unit 12345 Box 678".
         (?{ $_{sec_unit_type} = $_{_sec_unit_type1} if exists $_{_sec_unit_type1} })
         (?{ $_{sec_unit_num}  = $_{_sec_unit_num1}  if exists $_{_sec_unit_num1} })
-        /ix;
-
-    $Addr_Match{informal_address} = qr/
-        $Addr_Match{informal_address_pre}
-
-        # Matching to end of string is desirable. Otherwise we can fail to
-        # fully parse things that are present yet are optional. Consider the
-        # "12 Main , Apt 3" test case.
-        $
-
-        $Addr_Match{informal_address_post}
-        /ix;
-
-    $Addr_Match{informal_address_partial} = qr/
-        $Addr_Match{informal_address_pre}
-        $Addr_Match{informal_address_post}
         /ix;
 
     $Addr_Match{intersection} = qr/^\W*
@@ -1134,14 +1128,6 @@ sub parse_informal_address {
     local %_;
 
     if ($addr =~ /$Addr_Match{informal_address}/is) {
-        return $class->normalize_address({ %_ });
-    }
-    %_ = ();
-
-    # If we can't fully match the string, fall back to a partial match. We want
-    # to try to fully match the string first as otherwise we can leave parts
-    # unmatched that do match.
-    if ($addr =~ /$Addr_Match{informal_address_partial}/is) {
         return $class->normalize_address({ %_ });
     }
 
