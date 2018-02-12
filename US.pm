@@ -89,7 +89,7 @@ Name of the city, town, or other locale that the address is situated in.
 =head2 state
 
 The state which the address is situated in, given as its two-letter
-postal abbreviation.  for a list of abbreviations used.
+postal abbreviation.
 
 =head2 zip
 
@@ -98,11 +98,11 @@ Five digit ZIP postal code for the address, including leading zero, if needed.
 =head2 sec_unit_type
 
 If the address includes a Secondary Unit Designator, such as a room, suite or
-appartment, the C<sec_unit_type> field will indicate the type of unit.
+apartment, the C<sec_unit_type> field will indicate the type of unit.
 
 =head2 sec_unit_num
 
-If the address includes a Secondary Unit Designator, such as a room, suite or appartment,
+If the address includes a Secondary Unit Designator, such as a room, suite or apartment,
 the C<sec_unit_num> field will indicate the number of the unit (which may not be numeric).
 
 =head1 INTERSECTION SPECIFIER
@@ -169,11 +169,23 @@ our %Directional = (
 
 our %Direction_Code; # setup in init();
 
+
+our %Sec_Unit_Type = (
+    'p0 box'          => 'PO Box',
+    'p0'              => 'PO Box',
+    'po'              => 'PO Box',
+    'po box'          => 'PO Box',
+    'post office'     => 'PO Box',
+    'post office box' => 'PO Box',
+    'uspo'            => 'PO Box',
+    'us post office'  => 'PO Box',
+);
+
 =head2 %Street_Type
 
 Maps lowercased USPS standard street types to their canonical postal
 abbreviations as found in TIGER/Line.  See eg/get_street_abbrev.pl in
-the distrbution for how this map was generated.
+the distribution for how this map was generated.
 
 =cut
 
@@ -264,6 +276,7 @@ our %Street_Type = (
     crssing     => "xing",
     crssng      => "xing",
     crt         => "ct",
+    ct          => 'ct',
     curve       => "curv",
     dale        => "dl",
     dam         => "dm",
@@ -382,9 +395,11 @@ our %Street_Type = (
     loops       => "loop",
     manor       => "mnr",
     manors      => "mnrs",
+    marina      => 'marina',
     meadow      => "mdw",
     meadows     => "mdws",
     medows      => "mdws",
+    mall        => 'mall',
     mill        => "ml",
     mills       => "mls",
     mission     => "msn",
@@ -548,7 +563,7 @@ our %_Street_Type_Match;    # set up in init() later;
 =head2 %State_Code
 
 Maps lowercased US state and territory names to their canonical two-letter
-postal abbreviations. See eg/get_state_abbrev.pl in the distrbution
+postal abbreviations. See eg/get_state_abbrev.pl in the distribution
 for how this map was generated.
 
 =cut
@@ -619,7 +634,7 @@ our %State_Code = (
 
 Maps two-digit FIPS-55 US state and territory codes (including the
 leading zero!) as found in TIGER/Line to the state's canonical two-letter
-postal abbreviation. See eg/get_state_fips.pl in the distrbution for
+postal abbreviation. See eg/get_state_fips.pl in the distribution for
 how this map was generated. Yes, I know the FIPS data also has the state
 names. Oops.
 
@@ -700,16 +715,17 @@ our %Addr_Match; # setup in init()
 init();
 
 our %Normalize_Map = (
-    prefix  => \%Directional,
-    prefix1 => \%Directional,
-    prefix2 => \%Directional,
-    suffix  => \%Directional,
-    suffix1 => \%Directional,
-    suffix2 => \%Directional,
-    type    => \%Street_Type,
-    type1   => \%Street_Type,
-    type2   => \%Street_Type,
-    state   => \%State_Code,
+    prefix        => \%Directional,
+    prefix1       => \%Directional,
+    prefix2       => \%Directional,
+    suffix        => \%Directional,
+    suffix1       => \%Directional,
+    suffix2       => \%Directional,
+    type          => \%Street_Type,
+    type1         => \%Street_Type,
+    type2         => \%Street_Type,
+    sec_unit_type => \%Sec_Unit_Type,
+    state         => \%State_Code,
 );
 
 
@@ -784,7 +800,11 @@ sub init {
             } sort { length $b <=> length $a } values %Directional
         ),
         dircode => join("|", keys %Direction_Code),
-        zip     => qr/\d{5}(?:-?\d{4})?/,  # XXX add \b?
+
+        # Without \b we can have an address like "123 Main St 123456" and get
+        # "12345" as the zip (and ignore the rest) in the informal address
+        # pattern.
+        zip     => qr/\d{5}(?:-?\d{4})?\b/,
         corner  => qr/(?:\band\b|\bat\b|&|\@)/i,
     );
 
@@ -792,7 +812,7 @@ sub init {
     # treat "42S" as "42 S" (42 South). For example,
     # Utah and Wisconsin have a more elaborate system of block numbering
     # http://en.wikipedia.org/wiki/House_number#Block_numbers
-    $Addr_Match{number} = qr/(\d+-?\d*)(?=\D) (?{ $_{number} = $^N })/ix,
+    $Addr_Match{number} = qr/(\d+-?\d*)(?=\D) (?{ local $_{_number} = $^N })/ix,
 
     # note that expressions like [^,]+ may scan more than you expect
     $Addr_Match{street} = qr/
@@ -800,39 +820,72 @@ sub init {
           # special case for addresses like 100 South Street
           (?:($Addr_Match{direct})\W+           (?{ $_{street} = $^N })
              ($Addr_Match{type})\b              (?{ $_{type}   = $^N }))
-             #(?{ $_{_street}.=1 })
+            #(?{ $_{_street_debug}.=1 })
           |
           (?:($Addr_Match{direct})\W+           (?{ $_{prefix} = $^N }))?
           (?:
-            ([^,]*\d)                           (?{ $_{street} = $^N })
+            # "Highway 56 S": street: "Highway 56", suffix: "S". "Road 4567":
+            # street: "Road 4567", type: "Rd". "Hwy T56": street: "Hwy T56",
+            # type: "Hwy"
+            #
+            # We need to localize type as we can parse it out in cases it does
+            # not make sense to (which we then backtrack) such as "Mission &
+            # Valencia" leading to type "Msn".
+            ((?:$Addr_Match{state}\s+)?
+             ($Addr_Match{type})\b              (?{ local $_{_type}   = $^N })
+              \s+[a-z]?\d{1,4})                 (?{ local $_{_street} = $^N })
+            (?:\s*($Addr_Match{direct})\b       (?{ local $_{_suffix} = $^N }))?
+            #(?{ $_{_street_debug}.=2 })
+           |
+            # "COUNTY HWY 60E": street: "COUNTY HWY 60", suffix: "E", type:
+            # "HWY". Also "County Road 456": street: "County Road 456".
+            # Also "Van Zandt County Road": street: "Van Zandt County Road".
+            ((?:[a-z]+\s+)*?(?:county|co|state|old|farm)
+              [^\w,]+($Addr_Match{type})        (?{ local $_{_type}   = $^N })
+              [^\w,\x23]+\d{1,4}-?[a-df-mo-rt-vx-z]?)\b? (?{ local $_{_street} = $^N })
+            (?:($Addr_Match{direct})\b          (?{ local $_{_suffix} = $^N }))?
+            #(?{ $_{_street_debug}.=3 })
+           |
+            # "100E": street: "100", suffix: "E".
+            #
+            # If we take spaces in the first group, we can consume much more
+            # than is reasonable. For example, if we had Main Avenue Apt 9N
+            # we'd have street "Main Avenue Apt 9" and suffix "N".
+            ([^,\s]*\d)                         (?{ $_{street} = $^N })
             (?:[^\w,]*($Addr_Match{direct})\b   (?{ $_{suffix} = $^N; $_{type}||='' }))
-            #(?{ $_{_street}.=3 })
+            #(?{ $_{_street_debug}.=4 })
            |
             ([^,]+)                             (?{ $_{street} = $^N })
             (?:[^\w,]+($Addr_Match{type})\b     (?{ $_{type}   = $^N }))
             (?:[^\w,]+($Addr_Match{direct})\b   (?{ $_{suffix} = $^N }))?
-            #(?{ $_{_street}.=2 })
+            #(?{ $_{_street_debug}.=5 })
            |
-            ([^,]+?)                            (?{ $_{street} = $^N; $_{type}||='' })
+            # e.g. "Main" with no street type.
+            ([^,\x23\s]+?)                      (?{ $_{street} = $^N; $_{type}||='' })
             (?:[^\w,]+($Addr_Match{type})\b     (?{ $_{type}   = $^N }))?
             (?:[^\w,]+($Addr_Match{direct})\b   (?{ $_{suffix} = $^N }))?
-            #(?{ $_{_street}.=4 })
+            #(?{ $_{_street_debug}.=6 })
           )
+
+          (?{ $_{type}   = $_{_type}   if exists $_{_type} })
+          (?{ $_{street} = $_{_street} if exists $_{_street} })
+          (?{ $_{suffix} = $_{_suffix} if exists $_{_suffix} })
         )
     /ix;
 
 
     # http://pe.usps.com/text/pub28/pub28c2_003.htm
     # TODO add support for those that don't require a number
-    # TODO map to standard names/abbreviations
     $Addr_Match{sec_unit_type_numbered} = qr/
-          (su?i?te
-            |p\W*[om]\W*b(?:ox)?
+          (su?i?te?
+            |s?p\W*[om]\W*b?(?:ox)?
             |(?:ap|dep)(?:ar)?t(?:me?nt)?
             |ro*m
+            |flat
             |flo*r?
+            |f(?:ron)?t
             |uni?t
-            |bu?i?ldi?n?g
+            |bu?i?ldi?n?g?
             |ha?nga?r
             |lo?t
             |pier
@@ -840,6 +893,10 @@ sub init {
             |spa?ce?
             |stop
             |tra?i?le?r
+            |pod
+            |(?:u\.?s)?\W*p(?:ost)?\W*[0o](?:ffice)?\W*(?:box)?
+            |mail\W*box
+            |ship\w*
             |box)(?![a-z])            (?{ $_{sec_unit_type}   = $^N })
         /ix;
 
@@ -856,20 +913,80 @@ sub init {
             )\b                      (?{ $_{sec_unit_type}   = $^N })
         /ix;
 
-    $Addr_Match{sec_unit} = qr/
+    # Preceding street means we have to be more conservative. We can't consume
+    # just digits in that case as that will be the street number.
+    $Addr_Match{sec_unit_before_street} = qr/
         (:?
+        (:?
+            # Allow stuff like "ABC" in front of unit type
+            (?-i:[A-Z]{2,3})??\W*
             (?: (?:$Addr_Match{sec_unit_type_numbered} \W*)
                 | (\#)\W*            (?{ $_{sec_unit_type}   = $^N })
             )
-            (  [\w-]+)               (?{ $_{sec_unit_num}    = $^N })
+            (  [\w-]+)\b             (?{ $_{sec_unit_num}    = $^N })
         )
+        #(?{ $_{_sec_unit_debug}.=1 })
+        |
+        # "45th floor". We must localize sec_unit_num as we'll very often
+        # backtrack out of here.
+        (\d+?(?:st|nd|rd|th))\b       (?{ local $_{_sec_unit_num} = $^N })
+        \W*?$Addr_Match{sec_unit_type_numbered}
+        #(?{ $_{_sec_unit_debug}.=2 })
+        |
+        # STE 789 0123456
+        $Addr_Match{sec_unit_type_numbered} \W* (?{ $_{sec_unit_type} = $^N })
+        ((?:\d[\s-]*){1,10})         (?{ $_{sec_unit_num}    = $^N })
+        #(?{ $_{_sec_unit_debug}.=3 })
+        |
+        # "FT123": sec_unit_num: "123". "FIP #567B": sec_unit_type: "#",
+        # sec_unit_num: "567B".
+        (?-i:[A-Z]{2,3})
+        [\s-]*
+        (?:(\#)                      (?{ $_{sec_unit_type}   = $^N }))?
+        (\w+)\b                      (?{ $_{sec_unit_num}    = $^N })
+        #(?{ $_{_sec_unit_debug}.=4 })
+        |
+        # "B2": sec_unit_num: B2, "Apt B2"
+        (?:$Addr_Match{sec_unit_type_numbered}\W* (?{ $_{sec_unit_type} = $^N }))?
+        ([a-z][\s-]?\d+)\b           (?{ $_{sec_unit_num}    = $^N })
+        #(?{ $_{_sec_unit_debug}.=5 })
+        |
+        # "5A", "Apt 5 A"
+        (?:$Addr_Match{sec_unit_type_numbered}\W* (?{ $_{sec_unit_type} = $^N }))?
+        (\d+[\s-]?[a-df-mo-rt-vx-z])\b            (?{ $_{sec_unit_num}    = $^N })
+        #(?{ $_{_sec_unit_debug}.=6 })
+        |
+        # "A5-678"
+        ((?-i:[A-Z])\d[\s-]\d+)      (?{ $_{sec_unit_num}    = $^N })
+        #(?{ $_{_sec_unit_debug}.=7 })
         |
             $Addr_Match{sec_unit_type_unnumbered}
+        #(?{ $_{_sec_unit_debug}.=8 })
+        )
+        (?{ $_{sec_unit_num} = $_{_sec_unit_num} if exists $_{_sec_unit_num} })
+        /ix;
+
+    # After the street means we can grab pure digits as the unit number in some
+    # cases. Don't take \d{5} as that can be the ZIP. Don't take \d{9} as that
+    # can be a ZIP+4 (in cases lacking a hyphen).
+    $Addr_Match{sec_unit_after_street} = qr/
+        (?:
+        $Addr_Match{sec_unit_before_street}
+        |
+        (\d{1,4}|\d{6,8}|\d{10,})\b (?{ $_{sec_unit_num} = $^N })
+        #(?{ $_{_sec_unit_debug}.=9 })
+        |
+        # "A". Don't include N, E, S, W because we'll conflict with
+        # directions...
+        ([a-df-mo-rt-vx-z0-9])\b    (?{ $_{sec_unit_num} = $^N })
+        #(?{ $_{_sec_unit_debug}.='A' })
+        )
+        (?{ $_{sec_unit_num} = $_{_sec_unit_num} if exists $_{_sec_unit_num} })
         /ix;
 
     $Addr_Match{city_and_state} = qr/
         (?:
-            ([^\d,]+?)\W+            (?{ $_{city}   = $^N })
+            ([^\d,]+?)\W+            (?{ local $_{_city}   = $^N })
             ($Addr_Match{state})     (?{ $_{state}  = $^N })
         )
         /ix;
@@ -886,25 +1003,40 @@ sub init {
         [^\w\x23]*    # skip non-word chars except # (eg unit)
         (  $Addr_Match{number} )\W*
         (?:$Addr_Match{fraction}\W*)?
-           $Addr_Match{street}\W+
-        (?:$Addr_Match{sec_unit}\W+)?
-           $Addr_Match{place}
+           # If we consume # here then we can miss getting it in the sec unit
+           # type.
+           $Addr_Match{street}
+        (?:[^\w\x23]+$Addr_Match{sec_unit_after_street})?
+        (?:[^\w\x23]+$Addr_Match{place})?
         \W*         # require on non-word chars at end
         $           # right up to end of string
+
+        (?{ $_{number} = $_{_number} if exists $_{_number} })
+        (?{ $_{city} = $_{_city} if exists $_{_city} })
         /ix;
 
-    my $sep = qr/(?:\W+|\Z)/;
+    # Being non-greedy here allows us to parse "#" in unit.
+    my $sep = qr/(?:\W+?|\Z)/;
 
     $Addr_Match{informal_address} = qr/
         ^
         \s*         # skip leading whitespace
-        (?:$Addr_Match{sec_unit} $sep)?
-        (?:$Addr_Match{number})?\W*
+        (?:$Addr_Match{sec_unit_before_street} $sep)?
+        (?{ local $_{_sec_unit_type1} = $_{sec_unit_type} if exists $_{sec_unit_type} })
+        (?{ local $_{_sec_unit_num1}  = $_{sec_unit_num}  if exists $_{sec_unit_num} })
+        # Require \W as otherwise we can take "5" from "5th Ave" and have
+        # street "th".
+        (?:$Addr_Match{number}\W+)?
         (?:$Addr_Match{fraction}\W*)?
            $Addr_Match{street} $sep
-        (?:$Addr_Match{sec_unit} $sep)?
-        (?:$Addr_Match{place})?
-        # don't require match to reach end of string
+        (?:$Addr_Match{sec_unit_after_street} $sep)?
+        (?:$Addr_Match{place})
+        (?{ $_{number} = $_{_number} if exists $_{_number} })
+        (?{ $_{city} = $_{_city} if exists $_{_city} })
+        # This ugliness is so that we prefer the first unit if we parse it in
+        # two spots. It matters for things like "Unit 12345 Box 678".
+        (?{ $_{sec_unit_type} = $_{_sec_unit_type1} if exists $_{_sec_unit_type1} })
+        (?{ $_{sec_unit_num}  = $_{_sec_unit_num1}  if exists $_{_sec_unit_num1} })
         /ix;
 
     $Addr_Match{intersection} = qr/^\W*
@@ -917,7 +1049,10 @@ sub init {
             (?{ exists $_{$_} and $_{$_.2} = delete $_{$_} for (qw{prefix street type suffix})})
 
            $Addr_Match{place}
-        \W*$/ix;
+        \W*$
+
+        (?{ $_{city} = $_{_city} if exists $_{_city} })
+        /ix;
 }
 
 =head2 parse_location
@@ -934,7 +1069,7 @@ returns false then parse_informal_address() is called.
 sub parse_location {
     my ($class, $addr) = @_;
 
-    if ($addr =~ /$Addr_Match{corner}/ios) {
+    if ($addr =~ /$Addr_Match{corner}/is) {
         return $class->parse_intersection($addr);
     }
     return $class->parse_address($addr)
@@ -958,7 +1093,15 @@ sub parse_address {
     my ($class, $addr) = @_;
     local %_;
 
-    $addr =~ /$Addr_Match{address}/ios
+    # For cases such as "PO Box 1234" that have only a single unit, parse it as
+    # such. If we use the full regex we will do weird things like parse street
+    # as "PO".
+    if ($addr =~ /^\W*$Addr_Match{sec_unit_after_street}\W*$/ix) {
+        return $class->normalize_address({ %_ });
+    }
+    %_ = ();
+
+    $addr =~ /$Addr_Match{address}/is
         or return undef;
 
     return $class->normalize_address({ %_ });
@@ -984,10 +1127,11 @@ sub parse_informal_address {
     my ($class, $addr) = @_;
     local %_;
 
-    $addr =~ /$Addr_Match{informal_address}/ios
-        or return undef;
+    if ($addr =~ /$Addr_Match{informal_address}/is) {
+        return $class->normalize_address({ %_ });
+    }
 
-    return $class->normalize_address({ %_ });
+    return undef;
 }
 
 
@@ -1005,7 +1149,7 @@ sub parse_intersection {
     my ($class, $addr) = @_;
     local %_;
 
-    $addr =~ /$Addr_Match{intersection}/ios
+    $addr =~ /$Addr_Match{intersection}/is
         or return undef;
 
     my %part = %_;
@@ -1015,7 +1159,7 @@ sub parse_intersection {
     # So "X & Y Streets" becomes "X Street" and "Y Street".
     if ($part{type2} && (!$part{type1} or $part{type1} eq $part{type2})) {
         my $type = $part{type2};
-        if ($type =~ s/s\W*$//ios and $type =~ /^$Addr_Match{type}$/ios) {
+        if ($type =~ s/s\W*$//is and $type =~ /^$Addr_Match{type}$/is) {
             $part{type1} = $part{type2} = $type;
         }
     }
@@ -1049,7 +1193,7 @@ sub normalize_address {
     #m/^_/ and delete $part->{$_} for keys %$part; # for debug
 
     # strip off some punctuation
-    defined($_) && s/^\s+|\s+$|[^\w\s\-\#\&]//gos for values %$part;
+    defined($_) && s/^\s+|\s+$|[^\w\s\-\#\&]//gs for values %$part;
 
     while (my ($key, $map) = each %Normalize_Map) {
         $part->{$key} = $map->{lc $part->{$key}}
@@ -1073,11 +1217,11 @@ sub normalize_address {
 
     # attempt to expand directional prefixes on place names
     $part->{city} =~ s/^($Addr_Match{dircode})\s+(?=\S)
-                      /\u$Direction_Code{uc $1} /iosx
+                      /\u$Direction_Code{uc $1} /isx
                       if $part->{city};
 
     # strip ZIP+4 (which may be missing a hyphen)
-    $part->{zip} =~ s/^(.{5}).*/$1/os if $part->{zip};
+    $part->{zip} =~ s/^(.{5}).*/$1/s if $part->{zip};
 
     return $part;
 }
@@ -1118,7 +1262,7 @@ addresses (for my purposes). If you want USPS-style address standardization,
 try Scrape::USPS::ZipLookup(3pm). Be aware, however, that it scrapes a form on
 the USPS website in a way that may not be officially permitted and might break
 at any time. If this module does not do what you want, you might give the
-othersa try. All three modules are available from the CPAN.
+others a try. All three modules are available from the CPAN.
 
 You can see Geo::StreetAddress::US in action at L<http://geocoder.us/>.
 
