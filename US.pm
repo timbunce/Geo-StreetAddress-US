@@ -171,13 +171,14 @@ our %Direction_Code; # setup in init();
 
 
 our %Sec_Unit_Type = (
-    'p0 box'         => 'PO Box',
-    'p0'             => 'PO Box',
-    'po'             => 'PO Box',
-    'po box'         => 'PO Box',
-    'post office'    => 'PO Box',
-    'uspo'           => 'PO Box',
-    'us post office' => 'PO Box',
+    'p0 box'          => 'PO Box',
+    'p0'              => 'PO Box',
+    'po'              => 'PO Box',
+    'po box'          => 'PO Box',
+    'post office'     => 'PO Box',
+    'post office box' => 'PO Box',
+    'uspo'            => 'PO Box',
+    'us post office'  => 'PO Box',
 );
 
 =head2 %Street_Type
